@@ -7,7 +7,15 @@ class AuditStore extends ChangeNotifier {
   int _n = 100;
 
   void log(String user, String role, String type, String detail) {
-    entries.insert(0, AuditEntry(id: 'a${_n++}', userName: user, role: role, type: type, detail: detail, time: DateTime.now()));
+    entries.insert(
+        0,
+        AuditEntry(
+            id: 'a${_n++}',
+            userName: user,
+            role: role,
+            type: type,
+            detail: detail,
+            time: DateTime.now()));
     notifyListeners();
   }
 }

@@ -22,12 +22,16 @@ class PrimaryButton extends StatelessWidget {
           ? const SizedBox(
               height: 22,
               width: 22,
-              child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
+              child: CircularProgressIndicator(
+                  strokeWidth: 2.4, color: Colors.white),
             )
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
+                if (icon != null) ...[
+                  Icon(icon, size: 20),
+                  const SizedBox(width: 8)
+                ],
                 Text(label),
               ],
             ),

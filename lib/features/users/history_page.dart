@@ -16,16 +16,35 @@ class _HistoryPageState extends State<HistoryPage> {
   String _status = 'Semua';
   DateTimeRange? _range;
 
-  static const _loanOpts = ['Semua', 'Menunggu persetujuan', 'Disetujui', 'Ditolak', 'Booking kedaluwarsa', 'Sedang dipinjam'];
-  static const _consOpts = ['Semua', 'Menunggu persetujuan', 'Disetujui', 'Ditolak', 'Sudah diserahkan'];
+  static const _loanOpts = [
+    'Semua',
+    'Menunggu persetujuan',
+    'Disetujui',
+    'Ditolak',
+    'Booking kedaluwarsa',
+    'Sedang dipinjam'
+  ];
+  static const _consOpts = [
+    'Semua',
+    'Menunggu persetujuan',
+    'Disetujui',
+    'Ditolak',
+    'Sudah diserahkan'
+  ];
 
   bool _inRange(DateTime d) =>
-      _range == null || (!d.isBefore(_range!.start) && d.isBefore(_range!.end.add(const Duration(days: 1))));
+      _range == null ||
+      (!d.isBefore(_range!.start) &&
+          d.isBefore(_range!.end.add(const Duration(days: 1))));
 
   bool _loanMatch(LoanStatus s, String o) {
     switch (o) {
       case 'Menunggu persetujuan':
-        return const {LoanStatus.menungguVerifikasiWajah, LoanStatus.verifikasiBerhasil, LoanStatus.menungguPersetujuan}.contains(s);
+        return const {
+          LoanStatus.menungguVerifikasiWajah,
+          LoanStatus.verifikasiBerhasil,
+          LoanStatus.menungguPersetujuan
+        }.contains(s);
       case 'Disetujui':
         return s == LoanStatus.disetujui;
       case 'Ditolak':
@@ -33,7 +52,8 @@ class _HistoryPageState extends State<HistoryPage> {
       case 'Booking kedaluwarsa':
         return s == LoanStatus.kedaluwarsa;
       case 'Sedang dipinjam':
-        return s == LoanStatus.sedangDipinjam || s == LoanStatus.menungguPengembalian;
+        return s == LoanStatus.sedangDipinjam ||
+            s == LoanStatus.menungguPengembalian;
       default:
         return true;
     }
@@ -60,22 +80,42 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _filters(List<String>? opts) => AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          if (opts != null) FilterRow(label: 'Status', options: opts, selected: opts.contains(_status) ? _status : 'Semua', onSelected: (v) => setState(() => _status = v)),
+          if (opts != null)
+            FilterRow(
+                label: 'Status',
+                options: opts,
+                selected: opts.contains(_status) ? _status : 'Semua',
+                onSelected: (v) => setState(() => _status = v)),
           const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(minimumSize: const Size(0, 42)),
-              onPressed: _pickRange,
-              icon: const Icon(Icons.date_range, size: 18),
-              label: Text(_range == null ? 'Filter tanggal' : '${Fmt.date(_range!.start)} - ${Fmt.date(_range!.end)}'),
-            ),
-            if (_range != null) TextButton(onPressed: () => setState(() => _range = null), child: const Text('Hapus tanggal')),
-          ]),
+          Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                OutlinedButton.icon(
+                  style:
+                      OutlinedButton.styleFrom(minimumSize: const Size(0, 42)),
+                  onPressed: _pickRange,
+                  icon: const Icon(Icons.date_range, size: 18),
+                  label: Text(_range == null
+                      ? 'Filter tanggal'
+                      : '${Fmt.date(_range!.start)} - ${Fmt.date(_range!.end)}'),
+                ),
+                if (_range != null)
+                  TextButton(
+                      onPressed: () => setState(() => _range = null),
+                      child: const Text('Hapus tanggal')),
+              ]),
         ]),
       );
 
   Widget _list(List<Widget> cards, String empty) => cards.isEmpty
-      ? SizedBox(height: 260, child: EmptyState(icon: Icons.inbox_outlined, title: 'Belum ada data', message: empty))
+      ? SizedBox(
+          height: 260,
+          child: EmptyState(
+              icon: Icons.inbox_outlined,
+              title: 'Belum ada data',
+              message: empty))
       : ResponsiveGrid(minItemWidth: 400, children: cards);
 
   @override
@@ -94,8 +134,17 @@ class _HistoryPageState extends State<HistoryPage> {
           onTap: () => push(context, LoanDetailPage(loanId: l.id)),
         );
 
-    final active = loans.where((l) => l.status != LoanStatus.selesai && _loanMatch(l.status, st) && _inRange(l.submittedAt)).map(loanCard).toList();
-    final returned = loans.where((l) => l.status == LoanStatus.selesai && _inRange(l.submittedAt)).map(loanCard).toList();
+    final active = loans
+        .where((l) =>
+            l.status != LoanStatus.selesai &&
+            _loanMatch(l.status, st) &&
+            _inRange(l.submittedAt))
+        .map(loanCard)
+        .toList();
+    final returned = loans
+        .where((l) => l.status == LoanStatus.selesai && _inRange(l.submittedAt))
+        .map(loanCard)
+        .toList();
     final consCards = reqs
         .where((r) => _consMatch(r.status, cst) && _inRange(r.createdAt))
         .map((r) => RowCard(
@@ -103,7 +152,8 @@ class _HistoryPageState extends State<HistoryPage> {
               title: '${r.id} - ${r.summary}',
               subtitle: Fmt.dateTime(r.createdAt),
               trailing: StatusBadge.fromStatus(r.status.label),
-              onTap: () => push(context, ConsumableRequestDetailPage(requestId: r.id)),
+              onTap: () =>
+                  push(context, ConsumableRequestDetailPage(requestId: r.id)),
             ))
         .toList();
 
@@ -111,11 +161,32 @@ class _HistoryPageState extends State<HistoryPage> {
       length: 3,
       child: AppPage(
         title: 'Riwayat',
-        bottom: const TabBar(isScrollable: true, tabAlignment: TabAlignment.start, tabs: [Tab(text: 'Peminjaman'), Tab(text: 'Dikembalikan'), Tab(text: 'Habis pakai')]),
+        bottom: const TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: [
+              Tab(text: 'Peminjaman'),
+              Tab(text: 'Dikembalikan'),
+              Tab(text: 'Habis pakai')
+            ]),
         body: TabBarView(children: [
-          PageList(children: [_filters(_loanOpts), const SizedBox(height: 12), _list(active, 'Pengajuan peminjaman Anda akan muncul di sini.')]),
-          PageList(children: [_filters(null), const SizedBox(height: 12), _list(returned, 'Barang yang sudah dikembalikan akan muncul di sini.')]),
-          PageList(children: [_filters(_consOpts), const SizedBox(height: 12), _list(consCards, 'Permintaan barang habis pakai akan muncul di sini.')]),
+          PageList(children: [
+            _filters(_loanOpts),
+            const SizedBox(height: 12),
+            _list(active, 'Pengajuan peminjaman Anda akan muncul di sini.')
+          ]),
+          PageList(children: [
+            _filters(null),
+            const SizedBox(height: 12),
+            _list(
+                returned, 'Barang yang sudah dikembalikan akan muncul di sini.')
+          ]),
+          PageList(children: [
+            _filters(_consOpts),
+            const SizedBox(height: 12),
+            _list(
+                consCards, 'Permintaan barang habis pakai akan muncul di sini.')
+          ]),
         ]),
       ),
     );

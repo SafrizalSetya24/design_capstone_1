@@ -9,7 +9,13 @@ class StatCard extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback? onTap;
-  const StatCard({super.key, required this.icon, required this.value, required this.label, this.color = AppColors.blue, this.onTap});
+  const StatCard(
+      {super.key,
+      required this.icon,
+      required this.value,
+      required this.label,
+      this.color = AppColors.blue,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) => AppCard(
@@ -19,12 +25,18 @@ class StatCard extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10)),
               child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(height: 10),
-            Text(value, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: color)),
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            Text(value,
+                style: TextStyle(
+                    fontSize: 26, fontWeight: FontWeight.w800, color: color)),
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 12, color: AppColors.textSecondary)),
           ],
         ),
       );
@@ -36,5 +48,6 @@ class StatGrid extends StatelessWidget {
   final double minItemWidth;
   const StatGrid(this.cards, {super.key, this.minItemWidth = 150});
   @override
-  Widget build(BuildContext context) => ResponsiveGrid(minItemWidth: minItemWidth, children: cards);
+  Widget build(BuildContext context) =>
+      ResponsiveGrid(minItemWidth: minItemWidth, children: cards);
 }

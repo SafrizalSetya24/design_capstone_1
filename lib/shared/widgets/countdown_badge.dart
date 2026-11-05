@@ -1,4 +1,3 @@
-import 'dart:ui' show FontFeature;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sipintar/core/theme/app_colors.dart';
@@ -8,7 +7,8 @@ class CountdownBadge extends StatefulWidget {
   final DateTime deadline;
   final VoidCallback? onExpired;
   final bool big;
-  const CountdownBadge({super.key, required this.deadline, this.onExpired, this.big = false});
+  const CountdownBadge(
+      {super.key, required this.deadline, this.onExpired, this.big = false});
   @override
   State<CountdownBadge> createState() => _CountdownBadgeState();
 }
@@ -40,17 +40,26 @@ class _CountdownBadgeState extends State<CountdownBadge> {
   Widget build(BuildContext context) {
     final rem = widget.deadline.difference(DateTime.now());
     final urgent = rem.inHours < 1;
-    final color = rem.isNegative ? AppColors.danger : (urgent ? AppColors.danger : AppColors.warning);
+    final color = rem.isNegative
+        ? AppColors.danger
+        : (urgent ? AppColors.danger : AppColors.warning);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: widget.big ? 16 : 10, vertical: widget.big ? 12 : 4),
-      decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(widget.big ? 14 : 20)),
+      padding: EdgeInsets.symmetric(
+          horizontal: widget.big ? 16 : 10, vertical: widget.big ? 12 : 4),
+      decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(widget.big ? 14 : 20)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.timer_outlined, size: widget.big ? 24 : 14, color: color),
           const SizedBox(width: 6),
           Text(Fmt.countdown(rem),
-              style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: widget.big ? 22 : 12, fontFeatures: const [FontFeature.tabularFigures()])),
+              style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                  fontSize: widget.big ? 22 : 12,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
         ],
       ),
     );

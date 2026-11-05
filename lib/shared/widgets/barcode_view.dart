@@ -19,9 +19,17 @@ class BarcodeView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: height, width: double.infinity, child: CustomPaint(painter: _BarcodePainter(code))),
+          SizedBox(
+              height: height,
+              width: double.infinity,
+              child: CustomPaint(painter: _BarcodePainter(code))),
           const SizedBox(height: 4),
-          Text(code, style: const TextStyle(fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.w700, color: Colors.black87)),
+          Text(code,
+              style: const TextStyle(
+                  fontSize: 12,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87)),
         ],
       ),
     );
@@ -35,7 +43,11 @@ class _BarcodePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final widths = <int>[1, 1, 1];
     for (final cu in code.codeUnits) {
-      widths..add(1 + cu % 3)..add(1 + (cu ~/ 3) % 3)..add(1 + (cu ~/ 9) % 3)..add(1 + (cu ~/ 27) % 2);
+      widths
+        ..add(1 + cu % 3)
+        ..add(1 + (cu ~/ 3) % 3)
+        ..add(1 + (cu ~/ 9) % 3)
+        ..add(1 + (cu ~/ 27) % 2);
     }
     widths.addAll([1, 1, 1]);
     final total = widths.fold<int>(0, (a, b) => a + b);

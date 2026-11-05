@@ -30,20 +30,23 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: AppColors.navy,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: EdgeInsets.all(AppSpacing.lg),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 SipintarLogo(size: 104, inverted: true),
                 SizedBox(height: AppSpacing.lg),
                 Text('SIPINTAR',
                     style: TextStyle(
-                        color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5)),
                 SizedBox(height: AppSpacing.sm),
                 Text('Kelola Inventaris Sekolah dengan Mudah',
                     textAlign: TextAlign.center,
@@ -52,7 +55,8 @@ class _SplashPageState extends State<SplashPage> {
                 SizedBox(
                   width: 28,
                   height: 28,
-                  child: CircularProgressIndicator(strokeWidth: 2.6, color: Colors.white54),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2.6, color: Colors.white54),
                 ),
               ],
             ),

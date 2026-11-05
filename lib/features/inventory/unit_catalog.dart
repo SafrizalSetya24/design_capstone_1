@@ -23,9 +23,17 @@ class _UnitCatalogViewState extends State<UnitCatalogView> {
   Widget build(BuildContext context) {
     final inv = context.watch<InventoryStore>();
     final list = inv.items.where((i) {
-      if (_q.isNotEmpty && !i.name.toLowerCase().contains(_q.toLowerCase()) && !i.category.toLowerCase().contains(_q.toLowerCase())) return false;
+      if (_q.isNotEmpty &&
+          !i.name.toLowerCase().contains(_q.toLowerCase()) &&
+          !i.category.toLowerCase().contains(_q.toLowerCase())) {
+        return false;
+      }
       if (_cat != 'Semua' && i.category != _cat) return false;
-      if (_cond != 'Semua' && !i.hasCond(ItemCondition.values.firstWhere((c) => c.label == _cond))) return false;
+      if (_cond != 'Semua' &&
+          !i.hasCond(
+              ItemCondition.values.firstWhere((c) => c.label == _cond))) {
+        return false;
+      }
       if (_avail == 'Tersedia' && i.available == 0) return false;
       if (_avail == 'Tidak tersedia' && i.available > 0) return false;
       return true;
@@ -33,7 +41,9 @@ class _UnitCatalogViewState extends State<UnitCatalogView> {
 
     return SimLoading(
       child: PageList(children: [
-        SearchField(hint: 'Cari laptop, proyektor, kamera...', onChanged: (v) => setState(() => _q = v)),
+        SearchField(
+            hint: 'Cari laptop, proyektor, kamera...',
+            onChanged: (v) => setState(() => _q = v)),
         const SizedBox(height: 8),
         AppCard(
           padding: EdgeInsets.zero,
@@ -42,13 +52,32 @@ class _UnitCatalogViewState extends State<UnitCatalogView> {
             shape: const Border(),
             collapsedShape: const Border(),
             leading: const Icon(Icons.tune),
-            title: Text(_active == 0 ? 'Filter' : 'Filter ($_active aktif)', style: const TextStyle(fontWeight: FontWeight.w700)),
+            title: Text(_active == 0 ? 'Filter' : 'Filter ($_active aktif)',
+                style: const TextStyle(fontWeight: FontWeight.w700)),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FilterRow(label: 'Kategori', options: ['Semua', ...inv.categoryNames(CategoryType.perUnit)], selected: _cat, onSelected: (v) => setState(() => _cat = v)),
-              FilterRow(label: 'Kondisi', options: ['Semua', ...ItemCondition.values.map((c) => c.label)], selected: _cond, onSelected: (v) => setState(() => _cond = v)),
-              FilterRow(label: 'Ketersediaan', options: const ['Semua', 'Tersedia', 'Tidak tersedia'], selected: _avail, onSelected: (v) => setState(() => _avail = v)),
+              FilterRow(
+                  label: 'Kategori',
+                  options: [
+                    'Semua',
+                    ...inv.categoryNames(CategoryType.perUnit)
+                  ],
+                  selected: _cat,
+                  onSelected: (v) => setState(() => _cat = v)),
+              FilterRow(
+                  label: 'Kondisi',
+                  options: [
+                    'Semua',
+                    ...ItemCondition.values.map((c) => c.label)
+                  ],
+                  selected: _cond,
+                  onSelected: (v) => setState(() => _cond = v)),
+              FilterRow(
+                  label: 'Ketersediaan',
+                  options: const ['Semua', 'Tersedia', 'Tidak tersedia'],
+                  selected: _avail,
+                  onSelected: (v) => setState(() => _avail = v)),
               if (_active > 0)
                 Align(
                   alignment: Alignment.centerRight,
@@ -66,9 +95,16 @@ class _UnitCatalogViewState extends State<UnitCatalogView> {
         ),
         const SizedBox(height: AppSpacing.md),
         if (list.isEmpty)
-          const SizedBox(height: 260, child: EmptyState(icon: Icons.search_off, title: 'Barang tidak ditemukan', message: 'Ubah kata kunci atau filter pencarian Anda.'))
+          const SizedBox(
+              height: 260,
+              child: EmptyState(
+                  icon: Icons.search_off,
+                  title: 'Barang tidak ditemukan',
+                  message: 'Ubah kata kunci atau filter pencarian Anda.'))
         else
-          ResponsiveGrid(minItemWidth: 330, children: [for (final i in list) UnitCard(item: i)]),
+          ResponsiveGrid(
+              minItemWidth: 330,
+              children: [for (final i in list) UnitCard(item: i)]),
       ]),
     );
   }
@@ -86,14 +122,27 @@ class UnitCard extends StatelessWidget {
         ItemImage(iconKey: item.iconKey, size: 88),
         const SizedBox(width: 14),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            Text(item.category, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12.5)),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(item.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+            Text(item.category,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 12.5)),
             const SizedBox(height: 8),
             Wrap(spacing: 6, runSpacing: 6, children: [
-              StatusBadge(item.available > 0 ? '${item.available} unit tersedia' : 'Tidak tersedia',
-                  tone: item.available > 0 ? BadgeTone.success : BadgeTone.danger),
-              StatusBadge(item.conditionSummary, tone: allGood ? BadgeTone.success : BadgeTone.warning),
+              StatusBadge(
+                  item.available > 0
+                      ? '${item.available} unit tersedia'
+                      : 'Tidak tersedia',
+                  tone: item.available > 0
+                      ? BadgeTone.success
+                      : BadgeTone.danger),
+              StatusBadge(item.conditionSummary,
+                  tone: allGood ? BadgeTone.success : BadgeTone.warning),
             ]),
           ]),
         ),
@@ -111,7 +160,12 @@ class ItemDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final item = context.watch<InventoryStore>().itemById(itemId);
     if (item == null) {
-      return const AppPage(title: 'Detail Barang', body: EmptyState(icon: Icons.inventory_2_outlined, title: 'Barang tidak ditemukan', message: 'Barang mungkin sudah dihapus.'));
+      return const AppPage(
+          title: 'Detail Barang',
+          body: EmptyState(
+              icon: Icons.inventory_2_outlined,
+              title: 'Barang tidak ditemukan',
+              message: 'Barang mungkin sudah dihapus.'));
     }
     final first = item.units.isNotEmpty ? item.units.first : null;
     return AppPage(
@@ -120,52 +174,82 @@ class ItemDetailPage extends StatelessWidget {
         TwoPane(
           leftFlex: 2,
           rightFlex: 3,
-          left: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          left:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             ItemImage(iconKey: item.iconKey, size: 200, height: 220),
             const SizedBox(height: AppSpacing.md),
             if (first != null) ...[
-              const Text('Barcode unit (contoh)', style: TextStyle(fontWeight: FontWeight.w800)),
+              const Text('Barcode unit (contoh)',
+                  style: TextStyle(fontWeight: FontWeight.w800)),
               const SizedBox(height: 6),
               BarcodeView(code: first.code),
               const SizedBox(height: 4),
-              const Text('Barcode simulasi. Setiap unit memiliki kode aset unik.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              const Text(
+                  'Barcode simulasi. Setiap unit memiliki kode aset unik.',
+                  style:
+                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
             ],
           ]),
-          right: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text(item.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.navy)),
+          right:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(item.name,
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy)),
             const SizedBox(height: 4),
-            Text(item.category, style: const TextStyle(color: AppColors.textSecondary)),
+            Text(item.category,
+                style: const TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: AppSpacing.sm),
             Text(item.description, style: const TextStyle(height: 1.5)),
             const SizedBox(height: AppSpacing.md),
             InfoCard(title: 'Informasi barang', rows: [
-              ('Ketersediaan', '${item.available} dari ${item.total} unit tersedia'),
+              (
+                'Ketersediaan',
+                '${item.available} dari ${item.total} unit tersedia'
+              ),
               ('Kondisi', item.conditionSummary),
               ('Lokasi', item.location),
-              ('Kode aset', item.units.isEmpty ? '-' : '${item.units.first.code.split('-').first}-* (${item.total} unit)'),
+              (
+                'Kode aset',
+                item.units.isEmpty
+                    ? '-'
+                    : '${item.units.first.code.split('-').first}-* (${item.total} unit)'
+              ),
             ]),
             const SizedBox(height: AppSpacing.md),
             AppCard(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('Daftar kode aset', style: TextStyle(fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
-                for (final u in item.units)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(children: [
-                      Expanded(child: Text(u.code, style: const TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5))),
-                      StatusBadge.fromStatus(u.condition.label),
-                      const SizedBox(width: 6),
-                      StatusBadge.fromStatus(u.status.label),
-                    ]),
-                  ),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Daftar kode aset',
+                        style: TextStyle(fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 8),
+                    for (final u in item.units)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(children: [
+                          Expanded(
+                              child: Text(u.code,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5))),
+                          StatusBadge.fromStatus(u.condition.label),
+                          const SizedBox(width: 6),
+                          StatusBadge.fromStatus(u.status.label),
+                        ]),
+                      ),
+                  ]),
             ),
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(
-              label: item.available > 0 ? 'Ajukan peminjaman' : 'Tidak ada unit tersedia',
+              label: item.available > 0
+                  ? 'Ajukan peminjaman'
+                  : 'Tidak ada unit tersedia',
               icon: Icons.event_available,
-              onPressed: item.available > 0 ? () => push(context, LoanFormPage(presetItemId: item.id)) : null,
+              onPressed: item.available > 0
+                  ? () => push(context, LoanFormPage(presetItemId: item.id))
+                  : null,
             ),
           ]),
         ),

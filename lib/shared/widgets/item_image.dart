@@ -4,10 +4,31 @@ import 'package:sipintar/core/theme/app_colors.dart';
 /// Ilustrasi barang (ikon + latar gradasi) sebagai pengganti foto, tanpa aset eksternal.
 class ItemIcons {
   ItemIcons._();
-  static const keys = ['laptop', 'proyektor', 'kamera', 'speaker', 'mikrofon', 'kertas', 'pulpen', 'spidol', 'tinta', 'penghapus', 'umum'];
+  static const keys = [
+    'laptop',
+    'proyektor',
+    'kamera',
+    'speaker',
+    'mikrofon',
+    'kertas',
+    'pulpen',
+    'spidol',
+    'tinta',
+    'penghapus',
+    'umum'
+  ];
   static const labels = {
-    'laptop': 'Laptop', 'proyektor': 'Proyektor', 'kamera': 'Kamera', 'speaker': 'Speaker', 'mikrofon': 'Mikrofon',
-    'kertas': 'Kertas', 'pulpen': 'Pulpen', 'spidol': 'Spidol', 'tinta': 'Tinta', 'penghapus': 'Penghapus', 'umum': 'Umum',
+    'laptop': 'Laptop',
+    'proyektor': 'Proyektor',
+    'kamera': 'Kamera',
+    'speaker': 'Speaker',
+    'mikrofon': 'Mikrofon',
+    'kertas': 'Kertas',
+    'pulpen': 'Pulpen',
+    'spidol': 'Spidol',
+    'tinta': 'Tinta',
+    'penghapus': 'Penghapus',
+    'umum': 'Umum',
   };
   static IconData icon(String k) => switch (k) {
         'laptop' => Icons.laptop_mac_rounded,
@@ -41,7 +62,8 @@ class ItemImage extends StatelessWidget {
   final String iconKey;
   final double size;
   final double? height;
-  const ItemImage({super.key, required this.iconKey, this.size = 64, this.height});
+  const ItemImage(
+      {super.key, required this.iconKey, this.size = 64, this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +76,11 @@ class ItemImage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [c.withOpacity(0.10), c.withOpacity(0.24)],
+          colors: [c.withValues(alpha: 0.10), c.withValues(alpha: 0.24)],
         ),
       ),
-      child: Icon(ItemIcons.icon(iconKey), size: (height ?? size) * 0.5, color: c),
+      child:
+          Icon(ItemIcons.icon(iconKey), size: (height ?? size) * 0.5, color: c),
     );
   }
 }

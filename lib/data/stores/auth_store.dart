@@ -33,9 +33,15 @@ class AuthStore extends ChangeNotifier {
 
   String? login(String email, String pass) {
     final a = _byEmail(email);
-    if (a == null || a.password != pass) return 'Email atau kata sandi tidak sesuai. Periksa kembali lalu coba lagi.';
-    if (!a.active) return 'Akun Anda dinonaktifkan. Hubungi Admin sekolah untuk mengaktifkannya kembali.';
-    if (!a.emailVerified) return 'Email belum diverifikasi. Selesaikan verifikasi email terlebih dahulu.';
+    if (a == null || a.password != pass) {
+      return 'Email atau kata sandi tidak sesuai. Periksa kembali lalu coba lagi.';
+    }
+    if (!a.active) {
+      return 'Akun Anda dinonaktifkan. Hubungi Admin sekolah untuk mengaktifkannya kembali.';
+    }
+    if (!a.emailVerified) {
+      return 'Email belum diverifikasi. Selesaikan verifikasi email terlebih dahulu.';
+    }
     a.lastLogin = DateTime.now();
     currentUser = a.user;
     _log('Login', 'Masuk ke aplikasi');
@@ -49,17 +55,52 @@ class AuthStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  AppUser _build(UserRole role, String id, String name, String email, String identity, String extra) => switch (role) {
-        UserRole.siswa => Siswa(id: id, name: name, email: email, nis: identity, kelas: extra),
-        UserRole.guru => Guru(id: id, name: name, email: email, nik: identity, mataPelajaran: extra),
-        UserRole.sapras => SaprasUser(id: id, name: name, email: email, idPegawai: identity),
-        UserRole.admin => AdminUser(id: id, name: name, email: email, idPegawai: identity),
+  bool isFaceRegistered([String? userId]) {
+    final uid = userId ?? currentUser?.id;
+    if (uid == null) {
+      return false;
+    }
+    return accountOf(uid)?.faceRegistered ?? false;
+  }
+
+  void setFaceRegistered(bool registered, [String? userId]) {
+    final uid = userId ?? currentUser?.id;
+    if (uid == null) {
+      return;
+    }
+    final a = accountOf(uid);
+    if (a != null) {
+      a.faceRegistered = registered;
+      _log(registered ? 'Daftar Wajah' : 'Reset Wajah',
+          'Data wajah ${a.user.name} ${registered ? "berhasil didaftarkan" : "direset"}');
+      notifyListeners();
+    }
+  }
+
+  AppUser _build(UserRole role, String id, String name, String email,
+          String identity, String extra) =>
+      switch (role) {
+        UserRole.siswa =>
+          Siswa(id: id, name: name, email: email, nis: identity, kelas: extra),
+        UserRole.guru => Guru(
+            id: id,
+            name: name,
+            email: email,
+            nik: identity,
+            mataPelajaran: extra),
+        UserRole.sapras =>
+          SaprasUser(id: id, name: name, email: email, idPegawai: identity),
+        UserRole.admin =>
+          AdminUser(id: id, name: name, email: email, idPegawai: identity),
       };
 
-  String? _duplicate(UserRole role, String email, String identity, {String? exceptId}) {
+  String? _duplicate(UserRole role, String email, String identity,
+      {String? exceptId}) {
     for (final a in accounts) {
       if (a.user.id == exceptId) continue;
-      if (a.user.email.toLowerCase() == email.trim().toLowerCase()) return 'Email sudah terdaftar.';
+      if (a.user.email.toLowerCase() == email.trim().toLowerCase()) {
+        return 'Email sudah terdaftar.';
+      }
       if (a.user.role == role && a.user.identityValue == identity) {
         return '${a.user.identityLabel} sudah terdaftar.';
       }
@@ -84,8 +125,10 @@ class AuthStore extends ChangeNotifier {
       password: password,
       created: DateTime.now(),
       emailVerified: false,
+      faceRegistered: false,
     ));
-    _audit.log(name.trim(), role.label, 'Registrasi', 'Membuat akun ${role.label}');
+    _audit.log(
+        name.trim(), role.label, 'Registrasi', 'Membuat akun ${role.label}');
     notifyListeners();
     return null;
   }
@@ -112,11 +155,13 @@ class AuthStore extends ChangeNotifier {
     return null;
   }
 
-  String? updateProfile({required String name, required String email, String? extra}) {
+  String? updateProfile(
+      {required String name, required String email, String? extra}) {
     final me = currentUser!;
     final dup = _duplicate(me.role, email, me.identityValue, exceptId: me.id);
     if (dup != null && dup.startsWith('Email')) return dup;
-    final updated = me.withProfile(name: name.trim(), email: email.trim(), extra: extra?.trim());
+    final updated = me.withProfile(
+        name: name.trim(), email: email.trim(), extra: extra?.trim());
     accountOf(me.id)!.user = updated;
     currentUser = updated;
     _log('Akun', 'Memperbarui profil');
@@ -139,7 +184,8 @@ class AuthStore extends ChangeNotifier {
     if (dup != null) return dup;
     final id = '${role.name.substring(0, 2)}${_seq++}';
     accounts.add(Account(
-        user: _build(role, id, name.trim(), email.trim(), identity, extra.trim()),
+        user:
+            _build(role, id, name.trim(), email.trim(), identity, extra.trim()),
         password: password,
         created: DateTime.now()));
     _log('Pengguna', 'Menambah pengguna ${name.trim()} (${role.label})');
@@ -147,11 +193,14 @@ class AuthStore extends ChangeNotifier {
     return null;
   }
 
-  String? updateUser(String id, {required String name, required String email, String? extra}) {
+  String? updateUser(String id,
+      {required String name, required String email, String? extra}) {
     final a = accountOf(id)!;
-    final dup = _duplicate(a.user.role, email, a.user.identityValue, exceptId: id);
+    final dup =
+        _duplicate(a.user.role, email, a.user.identityValue, exceptId: id);
     if (dup != null && dup.startsWith('Email')) return dup;
-    a.user = a.user.withProfile(name: name.trim(), email: email.trim(), extra: extra?.trim());
+    a.user = a.user.withProfile(
+        name: name.trim(), email: email.trim(), extra: extra?.trim());
     if (currentUser?.id == id) currentUser = a.user;
     _log('Pengguna', 'Mengubah data pengguna ${a.user.name}');
     notifyListeners();
@@ -161,7 +210,8 @@ class AuthStore extends ChangeNotifier {
   void toggleActive(String id) {
     final a = accountOf(id)!;
     a.active = !a.active;
-    _log('Pengguna', '${a.active ? 'Mengaktifkan' : 'Menonaktifkan'} akun ${a.user.name}');
+    _log('Pengguna',
+        '${a.active ? 'Mengaktifkan' : 'Menonaktifkan'} akun ${a.user.name}');
     notifyListeners();
   }
 

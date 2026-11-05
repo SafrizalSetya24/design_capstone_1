@@ -27,14 +27,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _submit() async {
-    if (!_form.currentState!.validate()) return;
+    if (!_form.currentState!.validate()) {
+      return;
+    }
     setState(() {
       _loading = true;
       _error = null;
     });
     await Future.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
-    final err = context.read<AuthStore>().login(_email.text.trim(), _pass.text);
+    if (!mounted) {
+      return;
+    }
+    final auth = context.read<AuthStore>();
+    final err = auth.login(_email.text.trim(), _pass.text);
     if (err != null) {
       setState(() {
         _loading = false;
@@ -42,19 +47,37 @@ class _LoginPageState extends State<LoginPage> {
       });
       return;
     }
-    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
+    // Alur verifikasi / pendaftaran wajah sebelum masuk ke beranda
+    if (!auth.isFaceRegistered()) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.faceRegistration);
+    } else {
+      Navigator.of(context)
+          .pushReplacementNamed(AppRoutes.loginFaceVerification);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    const demo = ['sw1', 'gr1', 'sp1', 'ad1'];
+    const demo = [
+      ('sw1', 'Siswa'),
+      ('sw4', 'Siswa (Wajah Baru)'),
+      ('gr1', 'Guru'),
+      ('sp1', 'Sapras'),
+      ('ad1', 'Admin'),
+    ];
     return AuthLayout(
       child: Form(
         key: _form,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Masuk ke SIPINTAR', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy)),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('Masuk ke SIPINTAR',
+              style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.navy)),
           const SizedBox(height: 4),
-          const Text('Gunakan akun sekolah Anda.', style: TextStyle(color: AppColors.textSecondary)),
+          const Text('Gunakan akun sekolah Anda.',
+              style: TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.lg),
           AppTextField(
             controller: _email,
@@ -64,7 +87,9 @@ class _LoginPageState extends State<LoginPage> {
             validator: (v) {
               final t = v?.trim() ?? '';
               if (t.isEmpty) return 'Email wajib diisi';
-              if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(t)) return 'Format email belum benar';
+              if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(t)) {
+                return 'Format email belum benar';
+              }
               return null;
             },
           ),
@@ -74,12 +99,14 @@ class _LoginPageState extends State<LoginPage> {
             label: 'Kata sandi',
             icon: Icons.lock_outline,
             isPassword: true,
-            validator: (v) => (v == null || v.isEmpty) ? 'Kata sandi wajib diisi' : null,
+            validator: (v) =>
+                (v == null || v.isEmpty) ? 'Kata sandi wajib diisi' : null,
           ),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.forgot),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.forgot),
               child: const Text('Lupa kata sandi?'),
             ),
           ),
@@ -87,29 +114,40 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               margin: const EdgeInsets.only(bottom: AppSpacing.md),
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppColors.danger.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: AppColors.danger.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12)),
               child: Row(children: [
-                const Icon(Icons.error_outline, color: AppColors.danger, size: 20),
+                const Icon(Icons.error_outline,
+                    color: AppColors.danger, size: 20),
                 const SizedBox(width: 8),
-                Expanded(child: Text(_error!, style: const TextStyle(color: AppColors.danger, fontSize: 13))),
+                Expanded(
+                    child: Text(_error!,
+                        style: const TextStyle(
+                            color: AppColors.danger, fontSize: 13))),
               ]),
             ),
           PrimaryButton(label: 'Masuk', loading: _loading, onPressed: _submit),
           const SizedBox(height: AppSpacing.sm),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('Belum punya akun?', style: TextStyle(color: AppColors.textSecondary)),
-            TextButton(onPressed: () => Navigator.of(context).pushNamed(AppRoutes.accountType), child: const Text('Daftar')),
+            const Text('Belum punya akun?',
+                style: TextStyle(color: AppColors.textSecondary)),
+            TextButton(
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(AppRoutes.accountType),
+                child: const Text('Daftar')),
           ]),
           const SizedBox(height: AppSpacing.md),
-          const Text('Akun demo (kata sandi: sipintar123)', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          const Text('Akun demo (kata sandi: sipintar123)',
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.sm),
           Wrap(spacing: 8, runSpacing: 8, children: [
-            for (final id in demo)
+            for (final item in demo)
               ActionChip(
                 avatar: const Icon(Icons.person_outline, size: 16),
-                label: Text(DummyData.user(id).role.label),
+                label: Text(item.$2),
                 onPressed: () => setState(() {
-                  _email.text = DummyData.user(id).email;
+                  _email.text = DummyData.user(item.$1).email;
                   _pass.text = DummyData.password;
                   _error = null;
                 }),

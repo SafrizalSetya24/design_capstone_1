@@ -12,17 +12,23 @@ void snack(BuildContext c, String m, {bool error = false}) {
 }
 
 Future<bool> confirm(BuildContext c,
-    {required String title, required String message, String confirmLabel = 'Ya', bool danger = false}) async {
+    {required String title,
+    required String message,
+    String confirmLabel = 'Ya',
+    bool danger = false}) async {
   final r = await showDialog<bool>(
     context: c,
     builder: (_) => AlertDialog(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Batal')),
+        TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Batal')),
         FilledButton(
           style: FilledButton.styleFrom(
-              backgroundColor: danger ? AppColors.danger : AppColors.navy, minimumSize: const Size(96, 44)),
+              backgroundColor: danger ? AppColors.danger : AppColors.navy,
+              minimumSize: const Size(96, 44)),
           onPressed: () => Navigator.pop(c, true),
           child: Text(confirmLabel),
         ),

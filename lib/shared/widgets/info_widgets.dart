@@ -12,11 +12,17 @@ import 'package:sipintar/shared/widgets/status_badge.dart';
 class PageList extends StatelessWidget {
   final List<Widget> children;
   final EdgeInsets padding;
-  const PageList({super.key, required this.children, this.padding = const EdgeInsets.all(AppSpacing.md)});
+  const PageList(
+      {super.key,
+      required this.children,
+      this.padding = const EdgeInsets.all(AppSpacing.md)});
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         padding: padding,
-        child: ResponsiveBody(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)),
+        child: ResponsiveBody(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children)),
       );
 }
 
@@ -32,16 +38,27 @@ class InfoCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(children: [
-                Expanded(child: Text(title!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15))),
+                Expanded(
+                    child: Text(title!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w800, fontSize: 15))),
                 if (trailing != null) trailing!,
               ]),
             ),
           for (final r in rows)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                SizedBox(width: 118, child: Text(r.$1, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13))),
-                Expanded(child: Text(r.$2, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14))),
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                SizedBox(
+                    width: 118,
+                    child: Text(r.$1,
+                        style: const TextStyle(
+                            color: AppColors.textSecondary, fontSize: 13))),
+                Expanded(
+                    child: Text(r.$2,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 14))),
               ]),
             ),
         ]),
@@ -55,7 +72,14 @@ class RowCard extends StatelessWidget {
   final Widget? trailing;
   final List<Widget> extra;
   final VoidCallback? onTap;
-  const RowCard({super.key, this.leading, required this.title, this.subtitle, this.trailing, this.extra = const [], this.onTap});
+  const RowCard(
+      {super.key,
+      this.leading,
+      required this.title,
+      this.subtitle,
+      this.trailing,
+      this.extra = const [],
+      this.onTap});
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
@@ -64,15 +88,23 @@ class RowCard extends StatelessWidget {
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (leading != null) ...[leading!, const SizedBox(width: 12)],
             Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                if (subtitle != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(subtitle!, style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary)),
-                  ),
-                for (final e in extra) Padding(padding: const EdgeInsets.only(top: 8), child: e),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 15)),
+                    if (subtitle != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(subtitle!,
+                            style: const TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textSecondary)),
+                      ),
+                    for (final e in extra)
+                      Padding(padding: const EdgeInsets.only(top: 8), child: e),
+                  ]),
             ),
             if (trailing != null) ...[const SizedBox(width: 8), trailing!],
           ]),
@@ -91,23 +123,28 @@ class BorrowerCard extends StatelessWidget {
     final c = isSiswa ? AppColors.blue : AppColors.navy;
     return AppCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+        Text(title,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
         const SizedBox(height: 10),
         Row(children: [
           CircleAvatar(
               radius: 22,
               backgroundColor: c,
-              child: Text(b.name.trim().isEmpty ? '?' : b.name.trim()[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800))),
+              child: Text(
+                  b.name.trim().isEmpty ? '?' : b.name.trim()[0].toUpperCase(),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w800))),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(b.name, style: const TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               Wrap(spacing: 6, runSpacing: 4, children: [
                 _chip(b.role.label, c, bold: true),
                 _chip('${b.identityLabel}: ${b.identityValue}', c),
-                if (b.extraValue != null) _chip('${b.extraLabel}: ${b.extraValue}', c),
+                if (b.extraValue != null)
+                  _chip('${b.extraLabel}: ${b.extraValue}', c),
               ]),
             ]),
           ),
@@ -118,8 +155,14 @@ class BorrowerCard extends StatelessWidget {
 
   Widget _chip(String t, Color c, {bool bold = false}) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-        decoration: BoxDecoration(color: c.withOpacity(0.10), borderRadius: BorderRadius.circular(20)),
-        child: Text(t, style: TextStyle(color: c, fontSize: 12, fontWeight: bold ? FontWeight.w800 : FontWeight.w500)),
+        decoration: BoxDecoration(
+            color: c.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(20)),
+        child: Text(t,
+            style: TextStyle(
+                color: c,
+                fontSize: 12,
+                fontWeight: bold ? FontWeight.w800 : FontWeight.w500)),
       );
 }
 
@@ -153,11 +196,20 @@ class FormScaffold extends StatelessWidget {
               maxWidth: 780,
               child: Form(
                 key: formKey,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  for (final c in children) ...[c, const SizedBox(height: AppSpacing.md)],
-                  const SizedBox(height: AppSpacing.sm),
-                  PrimaryButton(label: submitLabel, icon: submitIcon, loading: loading, onPressed: onSubmit),
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final c in children) ...[
+                        c,
+                        const SizedBox(height: AppSpacing.md)
+                      ],
+                      const SizedBox(height: AppSpacing.sm),
+                      PrimaryButton(
+                          label: submitLabel,
+                          icon: submitIcon,
+                          loading: loading,
+                          onPressed: onSubmit),
+                    ]),
               ),
             ),
           ),
@@ -184,7 +236,8 @@ class _SimLoadingState extends State<SimLoading> {
   }
 
   @override
-  Widget build(BuildContext context) => _ready ? widget.child : const LoadingView();
+  Widget build(BuildContext context) =>
+      _ready ? widget.child : const LoadingView();
 }
 
 class SuccessView extends StatelessWidget {
@@ -218,17 +271,34 @@ class SuccessView extends StatelessWidget {
               child: ResponsiveBody(
                 maxWidth: 520,
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  CircleAvatar(radius: 46, backgroundColor: color.withOpacity(0.12), child: Icon(icon, size: 56, color: color)),
+                  CircleAvatar(
+                      radius: 46,
+                      backgroundColor: color.withValues(alpha: 0.12),
+                      child: Icon(icon, size: 56, color: color)),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                  Text(title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.navy)),
                   const SizedBox(height: AppSpacing.sm),
-                  Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary, height: 1.5)),
-                  if (extra != null) ...[const SizedBox(height: AppSpacing.md), extra!],
+                  Text(message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, height: 1.5)),
+                  if (extra != null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    extra!
+                  ],
                   const SizedBox(height: AppSpacing.xl),
-                  PrimaryButton(label: primaryLabel, onPressed: () => onPrimary(context)),
+                  PrimaryButton(
+                      label: primaryLabel, onPressed: () => onPrimary(context)),
                   if (secondaryLabel != null) ...[
                     const SizedBox(height: AppSpacing.sm),
-                    OutlinedButton(onPressed: () => onSecondary?.call(context), child: Text(secondaryLabel!)),
+                    OutlinedButton(
+                        onPressed: () => onSecondary?.call(context),
+                        child: Text(secondaryLabel!)),
                   ],
                 ]),
               ),
@@ -255,22 +325,32 @@ class LoanTimeline extends StatelessWidget {
                   width: 14,
                   height: 14,
                   margin: const EdgeInsets.only(top: 4),
-                  decoration: BoxDecoration(color: StatusBadge.colorOf(StatusBadge.toneOf(events[i].status.label)), shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                      color: StatusBadge.colorOf(
+                          StatusBadge.toneOf(events[i].status.label)),
+                      shape: BoxShape.circle),
                 ),
-                if (i != events.length - 1) Expanded(child: Container(width: 2, color: AppColors.border)),
+                if (i != events.length - 1)
+                  Expanded(child: Container(width: 2, color: AppColors.border)),
               ]),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 14),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(events[i].status.label, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  Text(_t(events[i].time), style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                  if (events[i].note != null)
-                    Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(events[i].note!, style: const TextStyle(fontSize: 12.5))),
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(events[i].status.label,
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text(_t(events[i].time),
+                          style: const TextStyle(
+                              fontSize: 12, color: AppColors.textSecondary)),
+                      if (events[i].note != null)
+                        Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(events[i].note!,
+                                style: const TextStyle(fontSize: 12.5))),
+                    ]),
               ),
             ),
           ]),

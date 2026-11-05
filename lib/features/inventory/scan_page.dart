@@ -65,19 +65,36 @@ class _ScanPageState extends State<ScanPage> {
     final inv = context.watch<InventoryStore>();
     final ref = _code == null ? null : inv.findByCode(_code!);
 
-    final left = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520), child: ScanFrameView(scanning: _scanning))),
+    final left =
+        Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Center(
+          child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: ScanFrameView(scanning: _scanning))),
       const SizedBox(height: AppSpacing.md),
-      PrimaryButton(label: _scanning ? 'Memindai...' : 'Pindai barcode (simulasi)', icon: Icons.qr_code_scanner, loading: _scanning, onPressed: _scan),
+      PrimaryButton(
+          label: _scanning ? 'Memindai...' : 'Pindai barcode (simulasi)',
+          icon: Icons.qr_code_scanner,
+          loading: _scanning,
+          onPressed: _scan),
       const SizedBox(height: AppSpacing.md),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Atau masukkan kode manual', style: TextStyle(fontWeight: FontWeight.w800)),
+          const Text('Atau masukkan kode manual',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Row(children: [
-            Expanded(child: AppTextField(controller: _manual, label: 'Kode unit', hint: 'Contoh: LPT-2026-001', icon: Icons.keyboard_outlined)),
+            Expanded(
+                child: AppTextField(
+                    controller: _manual,
+                    label: 'Kode unit',
+                    hint: 'Contoh: LPT-2026-001',
+                    icon: Icons.keyboard_outlined)),
             const SizedBox(width: 8),
-            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(88, 54)), onPressed: _lookup, child: const Text('Cari')),
+            FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size(88, 54)),
+                onPressed: _lookup,
+                child: const Text('Cari')),
           ]),
         ]),
       ),
@@ -87,18 +104,30 @@ class _ScanPageState extends State<ScanPage> {
     if (_scanning) {
       right = const SizedBox(height: 260, child: LoadingView());
     } else if (_code == null) {
-      right = const SizedBox(height: 260, child: EmptyState(icon: Icons.qr_code_2, title: 'Belum ada hasil pindai', message: 'Arahkan kamera ke barcode unit atau masukkan kode secara manual.'));
+      right = const SizedBox(
+          height: 260,
+          child: EmptyState(
+              icon: Icons.qr_code_2,
+              title: 'Belum ada hasil pindai',
+              message:
+                  'Arahkan kamera ke barcode unit atau masukkan kode secara manual.'));
     } else if (ref == null || _notFound) {
-      right = SizedBox(height: 280, child: ErrorState(message: 'Kode "$_code" tidak terdaftar pada inventaris.', onRetry: _reset));
+      right = SizedBox(
+          height: 280,
+          child: ErrorState(
+              message: 'Kode "$_code" tidak terdaftar pada inventaris.',
+              onRetry: _reset));
     } else {
       final u = ref.unit;
       right = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         AppCard(
-          color: AppColors.success.withOpacity(0.08),
+          color: AppColors.success.withValues(alpha: 0.08),
           child: Row(children: [
             const Icon(Icons.check_circle, color: AppColors.success),
             const SizedBox(width: 10),
-            Expanded(child: Text('Barcode terdeteksi: $_code', style: const TextStyle(fontWeight: FontWeight.w800))),
+            Expanded(
+                child: Text('Barcode terdeteksi: $_code',
+                    style: const TextStyle(fontWeight: FontWeight.w800))),
           ]),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -111,26 +140,45 @@ class _ScanPageState extends State<ScanPage> {
         ]),
         const SizedBox(height: 8),
         AppCard(
-          child: Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            const Text('Kondisi:', style: TextStyle(color: AppColors.textSecondary)),
-            StatusBadge.fromStatus(u.condition.label),
-            const Text('Ketersediaan:', style: TextStyle(color: AppColors.textSecondary)),
-            StatusBadge.fromStatus(u.status.label),
-          ]),
+          child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Text('Kondisi:',
+                    style: TextStyle(color: AppColors.textSecondary)),
+                StatusBadge.fromStatus(u.condition.label),
+                const Text('Ketersediaan:',
+                    style: TextStyle(color: AppColors.textSecondary)),
+                StatusBadge.fromStatus(u.status.label),
+              ]),
         ),
         const SizedBox(height: AppSpacing.md),
-        PrimaryButton(label: 'Lihat detail unit', icon: Icons.open_in_new, onPressed: () => push(context, UnitDetailPage(code: u.code))),
+        PrimaryButton(
+            label: 'Lihat detail unit',
+            icon: Icons.open_in_new,
+            onPressed: () => push(context, UnitDetailPage(code: u.code))),
         const SizedBox(height: 8),
         OutlinedButton(onPressed: _reset, child: const Text('Pindai lagi')),
       ]);
     }
 
-    return AppPage(title: 'Scan Barcode', body: PageList(children: [TwoPane(left: left, right: right, leftFlex: 1, rightFlex: 1, breakpoint: 820)]));
+    return AppPage(
+        title: 'Scan Barcode',
+        body: PageList(children: [
+          TwoPane(
+              left: left,
+              right: right,
+              leftFlex: 1,
+              rightFlex: 1,
+              breakpoint: 820)
+        ]));
   }
 }
 
 /// Sheet pindai SIMULASI untuk penyerahan/pengembalian. Mengembalikan [code] setelah "terpindai".
-Future<String?> showScanSheet(BuildContext c, {required String code}) => showModalBottomSheet<String>(
+Future<String?> showScanSheet(BuildContext c, {required String code}) =>
+    showModalBottomSheet<String>(
       context: c,
       isScrollControlled: true,
       showDragHandle: true,
@@ -158,9 +206,12 @@ class _ScanSheetState extends State<_ScanSheet> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            ConstrainedBox(constraints: const BoxConstraints(maxWidth: 420), child: const ScanFrameView(scanning: true, aspect: 16 / 10)),
+            ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: const ScanFrameView(scanning: true, aspect: 16 / 10)),
             const SizedBox(height: 12),
-            Text('Memindai barcode ${widget.code} (simulasi)...', style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text('Memindai barcode ${widget.code} (simulasi)...',
+                style: const TextStyle(fontWeight: FontWeight.w600)),
           ]),
         ),
       );

@@ -3,14 +3,21 @@ import 'package:sipintar/core/theme/app_colors.dart';
 
 enum FaceState { ready, scanning, success, failed }
 
-Widget _cameraBase({required Widget child, IconData icon = Icons.person_rounded}) => ClipRRect(
+Widget _cameraBase(
+        {required Widget child, IconData icon = Icons.person_rounded}) =>
+    ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1B2540), Color(0xFF0A1022)]),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF1B2540), Color(0xFF0A1022)]),
         ),
         child: Stack(fit: StackFit.expand, children: [
-          Align(alignment: const Alignment(0, 0.15), child: Icon(icon, size: 190, color: Colors.white10)),
+          Align(
+              alignment: const Alignment(0, 0.15),
+              child: Icon(icon, size: 190, color: Colors.white10)),
           child,
         ]),
       ),
@@ -24,8 +31,11 @@ class FaceCameraView extends StatefulWidget {
   State<FaceCameraView> createState() => _FaceCameraViewState();
 }
 
-class _FaceCameraViewState extends State<FaceCameraView> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat(reverse: true);
+class _FaceCameraViewState extends State<FaceCameraView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 1500))
+    ..repeat(reverse: true);
 
   @override
   void dispose() {
@@ -40,7 +50,8 @@ class _FaceCameraViewState extends State<FaceCameraView> with SingleTickerProvid
       child: _cameraBase(
         child: AnimatedBuilder(
           animation: _c,
-          builder: (_, __) => CustomPaint(painter: _FacePainter(widget.state, _c.value)),
+          builder: (_, __) =>
+              CustomPaint(painter: _FacePainter(widget.state, _c.value)),
         ),
       ),
     );
@@ -54,9 +65,13 @@ class _FacePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final oval = Rect.fromCenter(center: Offset(size.width / 2, size.height * 0.46), width: size.width * 0.62, height: size.height * 0.55);
+    final oval = Rect.fromCenter(
+        center: Offset(size.width / 2, size.height * 0.46),
+        width: size.width * 0.62,
+        height: size.height * 0.55);
     final hole = Path()..addOval(oval);
-    final scrim = Path.combine(PathOperation.difference, Path()..addRect(Offset.zero & size), hole);
+    final scrim = Path.combine(
+        PathOperation.difference, Path()..addRect(Offset.zero & size), hole);
     canvas.drawPath(scrim, Paint()..color = Colors.black54);
     final color = switch (state) {
       FaceState.ready => Colors.white,
@@ -64,15 +79,25 @@ class _FacePainter extends CustomPainter {
       FaceState.success => AppColors.success,
       FaceState.failed => AppColors.danger,
     };
-    canvas.drawOval(oval, Paint()..style = PaintingStyle.stroke..strokeWidth = 4..color = color);
+    canvas.drawOval(
+        oval,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4
+          ..color = color);
     if (state == FaceState.scanning) {
       canvas.save();
       canvas.clipPath(hole);
       final y = oval.top + oval.height * t;
       canvas.drawRect(
         Rect.fromLTWH(oval.left, y - 14, oval.width, 28),
-        Paint()..shader = LinearGradient(colors: [Colors.transparent, color.withOpacity(0.55), Colors.transparent], begin: Alignment.topCenter, end: Alignment.bottomCenter)
-            .createShader(Rect.fromLTWH(oval.left, y - 14, oval.width, 28)),
+        Paint()
+          ..shader = LinearGradient(colors: [
+            Colors.transparent,
+            color.withValues(alpha: 0.55),
+            Colors.transparent
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+              .createShader(Rect.fromLTWH(oval.left, y - 14, oval.width, 28)),
       );
       canvas.restore();
     }
@@ -91,8 +116,11 @@ class ScanFrameView extends StatefulWidget {
   State<ScanFrameView> createState() => _ScanFrameViewState();
 }
 
-class _ScanFrameViewState extends State<ScanFrameView> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))..repeat(reverse: true);
+class _ScanFrameViewState extends State<ScanFrameView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 1400))
+    ..repeat(reverse: true);
 
   @override
   void dispose() {
@@ -108,7 +136,8 @@ class _ScanFrameViewState extends State<ScanFrameView> with SingleTickerProvider
         icon: Icons.qr_code_2_rounded,
         child: AnimatedBuilder(
           animation: _c,
-          builder: (_, __) => CustomPaint(painter: _ScanPainter(widget.scanning, _c.value)),
+          builder: (_, __) =>
+              CustomPaint(painter: _ScanPainter(widget.scanning, _c.value)),
         ),
       ),
     );
@@ -122,8 +151,15 @@ class _ScanPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final r = Rect.fromCenter(center: size.center(Offset.zero), width: size.width * 0.72, height: size.height * 0.46);
-    final p = Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 4..strokeCap = StrokeCap.round;
+    final r = Rect.fromCenter(
+        center: size.center(Offset.zero),
+        width: size.width * 0.72,
+        height: size.height * 0.46);
+    final p = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round;
     const l = 26.0;
     for (final c in [r.topLeft, r.topRight, r.bottomLeft, r.bottomRight]) {
       final dx = c.dx == r.left ? 1.0 : -1.0;
@@ -133,7 +169,12 @@ class _ScanPainter extends CustomPainter {
     }
     if (scanning) {
       final y = r.top + r.height * t;
-      canvas.drawLine(Offset(r.left + 8, y), Offset(r.right - 8, y), Paint()..color = AppColors.danger..strokeWidth = 2.5);
+      canvas.drawLine(
+          Offset(r.left + 8, y),
+          Offset(r.right - 8, y),
+          Paint()
+            ..color = AppColors.danger
+            ..strokeWidth = 2.5);
     }
   }
 

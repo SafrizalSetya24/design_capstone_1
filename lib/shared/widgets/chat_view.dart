@@ -8,7 +8,12 @@ class ChatView extends StatefulWidget {
   final bool loading;
   final List<String> suggestions;
   final ValueChanged<String> onSend;
-  const ChatView({super.key, required this.messages, required this.loading, required this.suggestions, required this.onSend});
+  const ChatView(
+      {super.key,
+      required this.messages,
+      required this.loading,
+      required this.suggestions,
+      required this.onSend});
   @override
   State<ChatView> createState() => _ChatViewState();
 }
@@ -22,7 +27,8 @@ class _ChatViewState extends State<ChatView> {
     super.didUpdateWidget(old);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scroll.hasClients) {
-        _scroll.animateTo(_scroll.position.maxScrollExtent, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+        _scroll.animateTo(_scroll.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
       }
     });
   }
@@ -51,12 +57,20 @@ class _ChatViewState extends State<ChatView> {
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    CircleAvatar(radius: 34, backgroundColor: AppColors.blue.withOpacity(0.12), child: const Icon(Icons.smart_toy_outlined, size: 34, color: AppColors.blue)),
+                    CircleAvatar(
+                        radius: 34,
+                        backgroundColor: AppColors.blue.withValues(alpha: 0.12),
+                        child: const Icon(Icons.smart_toy_outlined,
+                            size: 34, color: AppColors.blue)),
                     const SizedBox(height: 14),
-                    const Text('Asisten SIPINTAR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    const Text('Asisten SIPINTAR',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 6),
-                    const Text('Tanyakan seputar inventaris, stok, dan peminjaman. Jawaban disusun dari data dummy (simulasi).',
-                        textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)),
+                    const Text(
+                        'Tanyakan seputar inventaris, stok, dan peminjaman. Jawaban disusun dari data dummy (simulasi).',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: AppColors.textSecondary)),
                   ]),
                 ),
               )
@@ -71,9 +85,13 @@ class _ChatViewState extends State<ChatView> {
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
           child: Row(children: [
-            SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+            SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2)),
             SizedBox(width: 10),
-            Text('Asisten sedang menyusun jawaban...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            Text('Asisten sedang menyusun jawaban...',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
           ]),
         ),
       SizedBox(
@@ -85,7 +103,9 @@ class _ChatViewState extends State<ChatView> {
             for (final s in widget.suggestions)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: ActionChip(label: Text(s, style: const TextStyle(fontSize: 12)), onPressed: () => _send(s)),
+                child: ActionChip(
+                    label: Text(s, style: const TextStyle(fontSize: 12)),
+                    onPressed: () => _send(s)),
               ),
           ],
         ),
@@ -98,12 +118,15 @@ class _ChatViewState extends State<ChatView> {
               controller: _text,
               onSubmitted: _send,
               textInputAction: TextInputAction.send,
-              decoration: const InputDecoration(hintText: 'Tulis pertanyaan Anda...'),
+              decoration:
+                  const InputDecoration(hintText: 'Tulis pertanyaan Anda...'),
             ),
           ),
           const SizedBox(width: 8),
           IconButton.filled(
-            style: IconButton.styleFrom(backgroundColor: AppColors.navy, minimumSize: const Size(52, 52)),
+            style: IconButton.styleFrom(
+                backgroundColor: AppColors.navy,
+                minimumSize: const Size(52, 52)),
             tooltip: 'Kirim',
             onPressed: widget.loading ? null : _send,
             icon: const Icon(Icons.send_rounded),
@@ -124,7 +147,8 @@ class _Bubble extends StatelessWidget {
       alignment: me ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: me ? AppColors.navy : Colors.white,
@@ -134,12 +158,23 @@ class _Bubble extends StatelessWidget {
             bottomLeft: Radius.circular(me ? 16 : 4),
             bottomRight: Radius.circular(me ? 4 : 16),
           ),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 2))
+          ],
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(m.text, style: TextStyle(color: me ? Colors.white : AppColors.textPrimary, height: 1.4)),
+          Text(m.text,
+              style: TextStyle(
+                  color: me ? Colors.white : AppColors.textPrimary,
+                  height: 1.4)),
           const SizedBox(height: 4),
-          Text(Fmt.time(m.time), style: TextStyle(fontSize: 10, color: me ? Colors.white70 : AppColors.textSecondary)),
+          Text(Fmt.time(m.time),
+              style: TextStyle(
+                  fontSize: 10,
+                  color: me ? Colors.white70 : AppColors.textSecondary)),
         ]),
       ),
     );

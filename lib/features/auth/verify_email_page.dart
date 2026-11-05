@@ -46,7 +46,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   Future<void> _verify() async {
     if (_code.text.trim() != '123456') {
-      snack(context, 'Kode tidak sesuai. Gunakan kode demo 123456.', error: true);
+      snack(context, 'Kode tidak sesuai. Gunakan kode demo 123456.',
+          error: true);
       return;
     }
     setState(() => _loading = true);
@@ -56,9 +57,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (_) => SuccessView(
         title: 'Email terverifikasi',
-        message: 'Akun Anda sudah aktif. Silakan masuk menggunakan email dan kata sandi.',
+        message:
+            'Akun Anda sudah aktif. Silakan masuk menggunakan email dan kata sandi.',
         primaryLabel: 'Ke halaman masuk',
-        onPrimary: (c) => Navigator.of(c, rootNavigator: true).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false),
+        onPrimary: (c) => Navigator.of(c, rootNavigator: true)
+            .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false),
       ),
     ));
   }
@@ -67,9 +70,16 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     return AuthLayout(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const Text('Verifikasi email', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy)),
+        const Text('Verifikasi email',
+            style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: AppColors.navy)),
         const SizedBox(height: 4),
-        Text('Kode 6 digit dikirim ke ${widget.email} (simulasi). Masukkan kode 123456.', style: const TextStyle(color: AppColors.textSecondary, height: 1.4)),
+        Text(
+            'Kode 6 digit dikirim ke ${widget.email} (simulasi). Masukkan kode 123456.',
+            style:
+                const TextStyle(color: AppColors.textSecondary, height: 1.4)),
         const SizedBox(height: AppSpacing.lg),
         AppTextField(
           controller: _code,
@@ -80,7 +90,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           maxLength: 6,
         ),
         const SizedBox(height: AppSpacing.lg),
-        PrimaryButton(label: 'Verifikasi', loading: _loading, onPressed: _verify),
+        PrimaryButton(
+            label: 'Verifikasi', loading: _loading, onPressed: _verify),
         const SizedBox(height: AppSpacing.sm),
         TextButton(
           onPressed: _left > 0
@@ -89,7 +100,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   _start();
                   snack(context, 'Kode verifikasi dikirim ulang (simulasi).');
                 },
-          child: Text(_left > 0 ? 'Kirim ulang kode dalam ${_left}s' : 'Kirim ulang kode'),
+          child: Text(_left > 0
+              ? 'Kirim ulang kode dalam ${_left}s'
+              : 'Kirim ulang kode'),
         ),
       ]),
     );

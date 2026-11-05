@@ -39,18 +39,23 @@ class LoanStore extends ChangeNotifier {
   }
 
   List<LoanRequest> forUser(String id) =>
-      loans.where((l) => l.borrower.id == id).toList()..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
+      loans.where((l) => l.borrower.id == id).toList()
+        ..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
   List<LoanRequest> withStatus(Set<LoanStatus> s) =>
-      loans.where((l) => s.contains(l.status)).toList()..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
-  int count(Set<LoanStatus> s) => loans.where((l) => s.contains(l.status)).length;
+      loans.where((l) => s.contains(l.status)).toList()
+        ..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
+  int count(Set<LoanStatus> s) =>
+      loans.where((l) => s.contains(l.status)).length;
 
-  DateTime deadlineOf(LoanRequest l) => l.submittedAt.add(Duration(hours: _settings.approvalHours));
+  DateTime deadlineOf(LoanRequest l) =>
+      l.submittedAt.add(Duration(hours: _settings.approvalHours));
   Duration remaining(LoanRequest l) => deadlineOf(l).difference(DateTime.now());
 
   void checkExpiry() {
     var changed = false;
     for (final l in loans) {
-      if (l.status == LoanStatus.menungguPersetujuan && remaining(l).isNegative) {
+      if (l.status == LoanStatus.menungguPersetujuan &&
+          remaining(l).isNegative) {
         _expire(l);
         changed = true;
       }
@@ -59,7 +64,8 @@ class LoanStore extends ChangeNotifier {
   }
 
   void _expire(LoanRequest l) {
-    _event(l, LoanStatus.kedaluwarsa, 'Batas persetujuan ${_settings.approvalHours} jam terlewati');
+    _event(l, LoanStatus.kedaluwarsa,
+        'Batas persetujuan ${_settings.approvalHours} jam terlewati');
     _notif.add(l.borrower.id, NotifType.kedaluwarsa, 'Booking kedaluwarsa',
         'Pengajuan ${l.id} tidak diproses dalam ${_settings.approvalHours} jam sehingga kedaluwarsa. Silakan ajukan ulang.',
         refId: l.id);
@@ -75,8 +81,14 @@ class LoanStore extends ChangeNotifier {
     required String purpose,
   }) {
     final l = LoanRequest(
-      id: 'PJM-${(27 + _n++).toString().padLeft(4, '0')}', borrower: borrower, lines: lines, start: start, end: end,
-      purpose: purpose.trim(), status: LoanStatus.menungguVerifikasiWajah, submittedAt: DateTime.now(),
+      id: 'PJM-${(27 + _n++).toString().padLeft(4, '0')}',
+      borrower: borrower,
+      lines: lines,
+      start: start,
+      end: end,
+      purpose: purpose.trim(),
+      status: LoanStatus.menungguVerifikasiWajah,
+      submittedAt: DateTime.now(),
     );
     l.events.add(LoanEvent(LoanStatus.menungguVerifikasiWajah, DateTime.now()));
     loans.add(l);
@@ -88,11 +100,16 @@ class LoanStore extends ChangeNotifier {
     l.faceScore = score;
     l.faceVerified = ok;
     if (ok) {
-      _event(l, LoanStatus.verifikasiBerhasil, 'Wajah cocok (${(score * 100).round()}%)');
+      _event(l, LoanStatus.verifikasiBerhasil,
+          'Wajah cocok (${(score * 100).round()}%)');
       l.submittedAt = DateTime.now();
       _event(l, LoanStatus.menungguPersetujuan);
-      _notif.add(l.borrower.id, NotifType.pengajuan, 'Pengajuan berhasil dikirim',
-          'Pengajuan ${l.id} menunggu persetujuan Sapras maksimal ${_settings.approvalHours} jam.', refId: l.id);
+      _notif.add(
+          l.borrower.id,
+          NotifType.pengajuan,
+          'Pengajuan berhasil dikirim',
+          'Pengajuan ${l.id} menunggu persetujuan Sapras maksimal ${_settings.approvalHours} jam.',
+          refId: l.id);
       _log('Pengajuan', 'Mengajukan peminjaman ${l.id}');
     }
     notifyListeners();
@@ -116,9 +133,11 @@ class LoanStore extends ChangeNotifier {
     }
     final issue = availabilityIssue(l);
     if (issue != null) return issue;
-    _event(l, LoanStatus.disetujui, 'Disetujui oleh ${_auth.currentUser?.name ?? 'Sapras'}');
+    _event(l, LoanStatus.disetujui,
+        'Disetujui oleh ${_auth.currentUser?.name ?? 'Sapras'}');
     _notif.add(l.borrower.id, NotifType.persetujuan, 'Peminjaman disetujui',
-        'Pengajuan ${l.id} disetujui. Ambil barang di Ruang Sapras sesuai jadwal.', refId: l.id);
+        'Pengajuan ${l.id} disetujui. Ambil barang di Ruang Sapras sesuai jadwal.',
+        refId: l.id);
     _log('Persetujuan', 'Menyetujui peminjaman ${l.id}');
     notifyListeners();
     return null;
@@ -128,7 +147,8 @@ class LoanStore extends ChangeNotifier {
     l.rejectReason = reason.trim();
     _event(l, LoanStatus.ditolak, l.rejectReason);
     _notif.add(l.borrower.id, NotifType.penolakan, 'Peminjaman ditolak',
-        'Pengajuan ${l.id} ditolak. Alasan: ${l.rejectReason}', refId: l.id);
+        'Pengajuan ${l.id} ditolak. Alasan: ${l.rejectReason}',
+        refId: l.id);
     _log('Penolakan', 'Menolak peminjaman ${l.id}');
     notifyListeners();
   }
@@ -137,11 +157,16 @@ class LoanStore extends ChangeNotifier {
   List<String> suggestUnits(LoanRequest l, String itemId, int skip) {
     final it = _inv.itemById(itemId);
     if (it == null) return [];
-    return it.units.where((u) => u.borrowable && !l.unitCodes.contains(u.code)).map((u) => u.code).toList();
+    return it.units
+        .where((u) => u.borrowable && !l.unitCodes.contains(u.code))
+        .map((u) => u.code)
+        .toList();
   }
 
   String? handover(LoanRequest l, String receiver, List<String> codes) {
-    if (codes.length != l.totalQty) return 'Scan seluruh unit barang terlebih dahulu.';
+    if (codes.length != l.totalQty) {
+      return 'Scan seluruh unit barang terlebih dahulu.';
+    }
     _inv.markBorrowed(codes);
     l.unitCodes = List.of(codes);
     l.receiver = receiver.trim();
@@ -158,12 +183,14 @@ class LoanStore extends ChangeNotifier {
   void markDue(LoanRequest l) {
     _event(l, LoanStatus.menungguPengembalian, 'Jadwal pengembalian tiba');
     _notif.add(l.borrower.id, NotifType.pengingat, 'Pengingat pengembalian',
-        'Waktu peminjaman ${l.id} telah berakhir. Segera kembalikan barang.', refId: l.id);
+        'Waktu peminjaman ${l.id} telah berakhir. Segera kembalikan barang.',
+        refId: l.id);
     notifyListeners();
   }
 
   // ---------- Pengembalian ----------
-  void completeReturn(LoanRequest l, Map<String, ItemCondition> conds, String note) {
+  void completeReturn(
+      LoanRequest l, Map<String, ItemCondition> conds, String note) {
     l.returnConditions = Map.of(conds);
     l.damageNote = note.trim().isEmpty ? null : note.trim();
     l.returnedAt = DateTime.now();
@@ -171,12 +198,18 @@ class LoanStore extends ChangeNotifier {
       _inv.releaseUnit(e.key);
       if (e.value != ItemCondition.layak) {
         _inv.reportDamage(e.key,
-            issue: l.damageNote ?? 'Ditemukan saat pengembalian ${l.id}', severity: e.value, note: 'Pengembalian ${l.id}');
+            issue: l.damageNote ?? 'Ditemukan saat pengembalian ${l.id}',
+            severity: e.value,
+            note: 'Pengembalian ${l.id}');
       }
     }
     _event(l, LoanStatus.selesai, 'Dikembalikan');
-    _notif.add(l.borrower.id, NotifType.persetujuan, 'Pengembalian dikonfirmasi',
-        'Barang pengajuan ${l.id} telah diterima kembali. Terima kasih.', refId: l.id);
+    _notif.add(
+        l.borrower.id,
+        NotifType.persetujuan,
+        'Pengembalian dikonfirmasi',
+        'Barang pengajuan ${l.id} telah diterima kembali. Terima kasih.',
+        refId: l.id);
     _log('Pengembalian', 'Mengonfirmasi pengembalian ${l.id}');
     notifyListeners();
   }
@@ -187,23 +220,28 @@ class LoanStore extends ChangeNotifier {
       case 'approve':
         return approve(l);
       case 'reject':
-        reject(l, 'Barang dibutuhkan untuk kegiatan sekolah pada jadwal tersebut.');
+        reject(l,
+            'Barang dibutuhkan untuk kegiatan sekolah pada jadwal tersebut.');
       case 'expire':
-        l.submittedAt = DateTime.now().subtract(Duration(hours: _settings.approvalHours, minutes: 1));
+        l.submittedAt = DateTime.now()
+            .subtract(Duration(hours: _settings.approvalHours, minutes: 1));
         _expire(l);
         notifyListeners();
       case 'handover':
         final codes = <String>[];
         for (final line in l.lines) {
           final c = suggestUnits(l, line.itemId, 0).take(line.qty).toList();
-          if (c.length < line.qty) return 'Unit ${line.itemName} belum cukup tersedia.';
+          if (c.length < line.qty) {
+            return 'Unit ${line.itemName} belum cukup tersedia.';
+          }
           codes.addAll(c);
         }
         return handover(l, l.borrower.name, codes);
       case 'due':
         markDue(l);
       case 'return':
-        completeReturn(l, {for (final c in l.unitCodes) c: ItemCondition.layak}, '');
+        completeReturn(
+            l, {for (final c in l.unitCodes) c: ItemCondition.layak}, '');
     }
     return null;
   }

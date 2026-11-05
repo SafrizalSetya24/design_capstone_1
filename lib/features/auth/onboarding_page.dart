@@ -49,7 +49,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
               children: [
                 Align(
                   alignment: Alignment.centerRight,
-                  child: TextButton(onPressed: _start, child: const Text('Lewati')),
+                  child: TextButton(
+                      onPressed: _start, child: const Text('Lewati')),
                 ),
                 Expanded(
                   child: PageView.builder(
@@ -65,21 +66,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             width: 160,
                             height: 160,
                             decoration: BoxDecoration(
-                              color: AppColors.blue.withOpacity(0.10),
+                              color: AppColors.blue.withValues(alpha: 0.10),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(s.icon, size: 76, color: AppColors.navy),
+                            child:
+                                Icon(s.icon, size: 76, color: AppColors.navy),
                           ),
                           const SizedBox(height: AppSpacing.xl),
                           Text(s.title,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.navy)),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.navy)),
                           const SizedBox(height: AppSpacing.md),
                           Text(s.body,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  fontSize: 15, height: 1.5, color: AppColors.textSecondary)),
+                                  fontSize: 15,
+                                  height: 1.5,
+                                  color: AppColors.textSecondary)),
                         ],
                       );
                     },
@@ -107,7 +113,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   onPressed: last
                       ? _start
                       : () => _controller.nextPage(
-                          duration: const Duration(milliseconds: 280), curve: Curves.easeOut),
+                          duration: const Duration(milliseconds: 280),
+                          curve: Curves.easeOut),
                 ),
               ],
             ),

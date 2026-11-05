@@ -55,7 +55,8 @@ class _RegisterPageState extends State<RegisterPage> {
       snack(context, err, error: true);
       return;
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => VerifyEmailPage(email: _email.text.trim())));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => VerifyEmailPage(email: _email.text.trim())));
   }
 
   @override
@@ -65,17 +66,27 @@ class _RegisterPageState extends State<RegisterPage> {
       showBack: true,
       child: Form(
         key: _form,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text('Registrasi ${widget.role.label}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy)),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text('Registrasi ${widget.role.label}',
+              style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.navy)),
           const SizedBox(height: 4),
-          Text(_siswa ? 'Isi data diri dengan NIS dan kelas Anda.' : 'Isi data diri dengan NIK dan jabatan atau mata pelajaran Anda.',
+          Text(
+              _siswa
+                  ? 'Isi data diri dengan NIS dan kelas Anda.'
+                  : 'Isi data diri dengan NIK dan jabatan atau mata pelajaran Anda.',
               style: const TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.lg),
           AppTextField(
             controller: _name,
             label: 'Nama lengkap',
             icon: Icons.person_outline,
-            validator: (v) => (v == null || v.trim().length < 3) ? 'Nama lengkap minimal 3 karakter' : null,
+            validator: (v) => (v == null || v.trim().length < 3)
+                ? 'Nama lengkap minimal 3 karakter'
+                : null,
           ),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
@@ -83,7 +94,10 @@ class _RegisterPageState extends State<RegisterPage> {
             label: 'Email',
             icon: Icons.mail_outline,
             keyboardType: TextInputType.emailAddress,
-            validator: (v) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v?.trim() ?? '') ? null : 'Masukkan email yang valid',
+            validator: (v) =>
+                RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v?.trim() ?? '')
+                    ? null
+                    : 'Masukkan email yang valid',
           ),
           const SizedBox(height: AppSpacing.md),
           if (_siswa) ...[
@@ -133,7 +147,9 @@ class _RegisterPageState extends State<RegisterPage> {
               label: 'Jabatan / mata pelajaran',
               hint: 'Contoh: Informatika',
               icon: Icons.menu_book_outlined,
-              validator: (v) => (v == null || v.trim().length < 3) ? 'Jabatan atau mata pelajaran wajib diisi' : null,
+              validator: (v) => (v == null || v.trim().length < 3)
+                  ? 'Jabatan atau mata pelajaran wajib diisi'
+                  : null,
             ),
           ],
           const SizedBox(height: AppSpacing.md),
@@ -142,7 +158,9 @@ class _RegisterPageState extends State<RegisterPage> {
             label: 'Kata sandi',
             icon: Icons.lock_outline,
             isPassword: true,
-            validator: (v) => (v == null || v.length < minPass) ? 'Kata sandi minimal $minPass karakter' : null,
+            validator: (v) => (v == null || v.length < minPass)
+                ? 'Kata sandi minimal $minPass karakter'
+                : null,
           ),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
@@ -162,5 +180,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
 class RegisterPageKelas {
   RegisterPageKelas._();
-  static const list = ['X RPL 1', 'X RPL 2', 'X TKJ 1', 'X TKJ 2', 'XI RPL 1', 'XI RPL 2', 'XI TKJ 1', 'XI AKL 1', 'XII MM 1', 'XII RPL 1'];
+  static const list = [
+    'X RPL 1',
+    'X RPL 2',
+    'X TKJ 1',
+    'X TKJ 2',
+    'XI RPL 1',
+    'XI RPL 2',
+    'XI TKJ 1',
+    'XI AKL 1',
+    'XII MM 1',
+    'XII RPL 1'
+  ];
 }

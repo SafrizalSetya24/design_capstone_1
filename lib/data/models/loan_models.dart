@@ -34,20 +34,31 @@ extension LoanStatusX on LoanStatus {
       LoanStatus.menungguPersetujuan,
     ];
     return switch (this) {
-      LoanStatus.menungguVerifikasiWajah => [LoanStatus.menungguVerifikasiWajah],
+      LoanStatus.menungguVerifikasiWajah => [
+          LoanStatus.menungguVerifikasiWajah
+        ],
       LoanStatus.verifikasiBerhasil => base.sublist(0, 2),
       LoanStatus.menungguPersetujuan => base,
       LoanStatus.disetujui => [...base, LoanStatus.disetujui],
       LoanStatus.ditolak => [...base, LoanStatus.ditolak],
       LoanStatus.kedaluwarsa => [...base, LoanStatus.kedaluwarsa],
-      LoanStatus.sedangDipinjam => [...base, LoanStatus.disetujui, LoanStatus.sedangDipinjam],
+      LoanStatus.sedangDipinjam => [
+          ...base,
+          LoanStatus.disetujui,
+          LoanStatus.sedangDipinjam
+        ],
       LoanStatus.menungguPengembalian => [
           ...base,
           LoanStatus.disetujui,
           LoanStatus.sedangDipinjam,
           LoanStatus.menungguPengembalian
         ],
-      LoanStatus.selesai => [...base, LoanStatus.disetujui, LoanStatus.sedangDipinjam, LoanStatus.selesai],
+      LoanStatus.selesai => [
+          ...base,
+          LoanStatus.disetujui,
+          LoanStatus.sedangDipinjam,
+          LoanStatus.selesai
+        ],
     };
   }
 }
@@ -79,7 +90,11 @@ class Borrower {
 class LoanLine {
   final String itemId, itemName, iconKey;
   int qty;
-  LoanLine({required this.itemId, required this.itemName, required this.iconKey, required this.qty});
+  LoanLine(
+      {required this.itemId,
+      required this.itemName,
+      required this.iconKey,
+      required this.qty});
 }
 
 class LoanEvent {
@@ -177,5 +192,6 @@ class ConsumableRequest {
     this.reason,
     this.handedAt,
   });
-  String get summary => lines.map((l) => '${l.qty} ${l.satuan} ${l.itemName}').join(', ');
+  String get summary =>
+      lines.map((l) => '${l.qty} ${l.satuan} ${l.itemName}').join(', ');
 }

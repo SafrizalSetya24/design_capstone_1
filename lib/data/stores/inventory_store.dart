@@ -23,8 +23,8 @@ class InventoryStore extends ChangeNotifier {
   int _n = 100;
 
   String get _actor => _auth.currentUser?.name ?? 'Sistem';
-  void _log(String type, String detail) =>
-      _audit.log(_actor, _auth.currentUser?.role.label ?? 'Sistem', type, detail);
+  void _log(String type, String detail) => _audit.log(
+      _actor, _auth.currentUser?.role.label ?? 'Sistem', type, detail);
 
   UnitItem? itemById(String id) {
     for (final i in items) {
@@ -43,20 +43,27 @@ class InventoryStore extends ChangeNotifier {
     return null;
   }
 
-  List<UnitRef> allUnits() => [for (final i in items) for (final u in i.units) UnitRef(i, u)];
+  List<UnitRef> allUnits() => [
+        for (final i in items)
+          for (final u in i.units) UnitRef(i, u)
+      ];
   int get totalUnits => items.fold(0, (a, i) => a + i.total);
   int countCond(ItemCondition c) => items.fold(0, (a, i) => a + i.countCond(c));
-  List<String> categoryNames(CategoryType t) => categories.where((c) => c.type == t).map((c) => c.name).toList();
+  List<String> categoryNames(CategoryType t) =>
+      categories.where((c) => c.type == t).map((c) => c.name).toList();
 
   // ---------- CRUD barang per unit ----------
   String _prefix(String name) {
     final letters = name.toUpperCase().replaceAll(RegExp(r'[^A-Z]'), '');
-    return letters.length >= 3 ? letters.substring(0, 3) : letters.padRight(3, 'X');
+    return letters.length >= 3
+        ? letters.substring(0, 3)
+        : letters.padRight(3, 'X');
   }
 
   AssetUnit _newUnit(String prefix, ItemCondition c) {
     var seq = 1;
-    String code() => '$prefix-${DateTime.now().year}-${seq.toString().padLeft(3, '0')}';
+    String code() =>
+        '$prefix-${DateTime.now().year}-${seq.toString().padLeft(3, '0')}';
     while (findByCode(code()) != null) {
       seq++;
     }
@@ -81,8 +88,13 @@ class InventoryStore extends ChangeNotifier {
     required String iconKey,
   }) {
     final item = UnitItem(
-        id: 'it${_n++}', name: name.trim(), category: category, description: description.trim(),
-        location: location.trim(), iconKey: iconKey, units: []);
+        id: 'it${_n++}',
+        name: name.trim(),
+        category: category,
+        description: description.trim(),
+        location: location.trim(),
+        iconKey: iconKey,
+        units: []);
     final p = _prefix(name);
     for (var i = 0; i < count; i++) {
       item.units.add(_newUnit(p, condition));
@@ -94,7 +106,9 @@ class InventoryStore extends ChangeNotifier {
   }
 
   void addUnits(UnitItem item, int count, ItemCondition c) {
-    final p = item.units.isNotEmpty ? item.units.first.code.split('-').first : _prefix(item.name);
+    final p = item.units.isNotEmpty
+        ? item.units.first.code.split('-').first
+        : _prefix(item.name);
     for (var i = 0; i < count; i++) {
       item.units.add(_newUnit(p, c));
     }
@@ -103,7 +117,11 @@ class InventoryStore extends ChangeNotifier {
   }
 
   void updateItem(UnitItem item,
-      {required String name, required String category, required String description, required String location, required String iconKey}) {
+      {required String name,
+      required String category,
+      required String description,
+      required String location,
+      required String iconKey}) {
     item.name = name.trim();
     item.category = category;
     item.description = description.trim();
@@ -149,22 +167,42 @@ class InventoryStore extends ChangeNotifier {
   }
 
   void _addLog(UnitRef r, ItemCondition to, String note) {
-    logs.insert(0, ConditionLog(unitCode: r.unit.code, itemName: r.item.name, from: r.unit.condition, to: to,
-        note: note, date: DateTime.now(), actor: _actor));
+    logs.insert(
+        0,
+        ConditionLog(
+            unitCode: r.unit.code,
+            itemName: r.item.name,
+            from: r.unit.condition,
+            to: to,
+            note: note,
+            date: DateTime.now(),
+            actor: _actor));
   }
 
   RepairRecord? reportDamage(String code,
-      {required String issue, required ItemCondition severity, String note = ''}) {
+      {required String issue,
+      required ItemCondition severity,
+      String note = ''}) {
     final r = findByCode(code);
     if (r == null) return null;
     _addLog(r, severity, issue);
     _apply(r.unit, severity);
     final rec = RepairRecord(
-      id: 'r${_n++}', unitCode: code, itemName: r.item.name, issue: issue, severity: severity,
-      status: severity == ItemCondition.rusakTotal ? RepairStatus.tidakDapatDiperbaiki : RepairStatus.menunggu,
-      reportedAt: DateTime.now(), updatedAt: DateTime.now(), notes: note,
+      id: 'r${_n++}',
+      unitCode: code,
+      itemName: r.item.name,
+      issue: issue,
+      severity: severity,
+      status: severity == ItemCondition.rusakTotal
+          ? RepairStatus.tidakDapatDiperbaiki
+          : RepairStatus.menunggu,
+      reportedAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      notes: note,
       confirmed: severity == ItemCondition.rusakTotal,
-      finalCondition: severity == ItemCondition.rusakTotal ? ItemCondition.rusakTotal : null,
+      finalCondition: severity == ItemCondition.rusakTotal
+          ? ItemCondition.rusakTotal
+          : null,
     );
     repairs.insert(0, rec);
     _log('Inventaris', 'Mencatat kerusakan unit $code');
@@ -172,7 +210,10 @@ class InventoryStore extends ChangeNotifier {
     return rec;
   }
 
-  void updateRepair(RepairRecord rec, {required RepairStatus status, required String technician, required String notes}) {
+  void updateRepair(RepairRecord rec,
+      {required RepairStatus status,
+      required String technician,
+      required String notes}) {
     rec.status = status;
     rec.technician = technician.trim().isEmpty ? '-' : technician.trim();
     rec.notes = notes.trim();
@@ -191,24 +232,28 @@ class InventoryStore extends ChangeNotifier {
   void confirmRepair(RepairRecord rec, ItemCondition finalCond, String note) {
     final r = findByCode(rec.unitCode);
     if (r != null) {
-      _addLog(r, finalCond, note.isEmpty ? 'Pemeriksaan setelah perbaikan' : note);
+      _addLog(
+          r, finalCond, note.isEmpty ? 'Pemeriksaan setelah perbaikan' : note);
       _apply(r.unit, finalCond);
     }
     rec.confirmed = true;
     rec.finalCondition = finalCond;
     rec.updatedAt = DateTime.now();
-    _log('Perbaikan', 'Konfirmasi pemeriksaan ${rec.unitCode}: ${finalCond.label}');
+    _log('Perbaikan',
+        'Konfirmasi pemeriksaan ${rec.unitCode}: ${finalCond.label}');
     notifyListeners();
   }
 
   // ---------- Kategori ----------
   void addCategory(String name, CategoryType t, String desc) {
-    categories.add(Category(id: 'k${_n++}', name: name.trim(), type: t, description: desc.trim()));
+    categories.add(Category(
+        id: 'k${_n++}', name: name.trim(), type: t, description: desc.trim()));
     _log('Kategori', 'Menambah kategori ${name.trim()}');
     notifyListeners();
   }
 
-  void updateCategory(Category c, String name, CategoryType t, String desc, void Function(String old, String neu) onRename) {
+  void updateCategory(Category c, String name, CategoryType t, String desc,
+      void Function(String old, String neu) onRename) {
     final old = c.name;
     c.name = name.trim();
     c.type = t;

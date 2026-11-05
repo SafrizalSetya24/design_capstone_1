@@ -8,7 +8,8 @@ import 'package:sipintar/shared/widgets/widgets.dart';
 
 void _audit(BuildContext c, String detail) {
   final me = c.read<AuthStore>().currentUser;
-  c.read<AuditStore>().log(me?.name ?? 'Admin', me?.role.label ?? 'Admin', 'Pengaturan', detail);
+  c.read<AuditStore>().log(
+      me?.name ?? 'Admin', me?.role.label ?? 'Admin', 'Pengaturan', detail);
 }
 
 class SystemSettingsPage extends StatelessWidget {
@@ -18,13 +19,48 @@ class SystemSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.watch<SettingsStore>();
     final items = <(IconData, String, String, Widget)>[
-      (Icons.info_outline, 'Informasi aplikasi', 'Versi dan keterangan aplikasi', const AppInfoPage()),
-      (Icons.tune, 'Pengaturan umum', '${s.schoolName} - ${s.academicYear}', const GeneralSettingsPage()),
-      (Icons.security, 'Pengaturan keamanan', 'Kata sandi minimal ${s.minPasswordLength} karakter', const SecuritySettingsPage()),
-      (Icons.timer_outlined, 'Batas waktu booking', 'Persetujuan Sapras maksimal ${s.approvalHours} jam', const BookingSettingsPage()),
-      (Icons.notifications_none, 'Pengaturan notifikasi', 'Jenis notifikasi sistem', const NotificationSettingsPage()),
-      (Icons.manage_accounts_outlined, 'Pengaturan akun', 'Profil dan kata sandi Admin', const AccountSettingsPage()),
-      (Icons.admin_panel_settings_outlined, 'Pengaturan hak akses', 'Izin menu dan fitur tiap role', const RoleManagementPage()),
+      (
+        Icons.info_outline,
+        'Informasi aplikasi',
+        'Versi dan keterangan aplikasi',
+        const AppInfoPage()
+      ),
+      (
+        Icons.tune,
+        'Pengaturan umum',
+        '${s.schoolName} - ${s.academicYear}',
+        const GeneralSettingsPage()
+      ),
+      (
+        Icons.security,
+        'Pengaturan keamanan',
+        'Kata sandi minimal ${s.minPasswordLength} karakter',
+        const SecuritySettingsPage()
+      ),
+      (
+        Icons.timer_outlined,
+        'Batas waktu booking',
+        'Persetujuan Sapras maksimal ${s.approvalHours} jam',
+        const BookingSettingsPage()
+      ),
+      (
+        Icons.notifications_none,
+        'Pengaturan notifikasi',
+        'Jenis notifikasi sistem',
+        const NotificationSettingsPage()
+      ),
+      (
+        Icons.manage_accounts_outlined,
+        'Pengaturan akun',
+        'Profil dan kata sandi Admin',
+        const AccountSettingsPage()
+      ),
+      (
+        Icons.admin_panel_settings_outlined,
+        'Pengaturan hak akses',
+        'Izin menu dan fitur tiap role',
+        const RoleManagementPage()
+      ),
     ];
     return AppPage(
       title: 'Pengaturan Sistem',
@@ -34,13 +70,22 @@ class SystemSettingsPage extends StatelessWidget {
             AppCard(
               onTap: () => push(context, i.$4),
               child: Row(children: [
-                CircleAvatar(backgroundColor: AppColors.blue.withOpacity(0.12), child: Icon(i.$1, color: AppColors.navy)),
+                CircleAvatar(
+                    backgroundColor: AppColors.blue.withValues(alpha: 0.12),
+                    child: Icon(i.$1, color: AppColors.navy)),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(i.$2, style: const TextStyle(fontWeight: FontWeight.w800)),
-                    Text(i.$3, style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary)),
-                  ]),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(i.$2,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
+                        Text(i.$3,
+                            style: const TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textSecondary)),
+                      ]),
                 ),
                 const Icon(Icons.chevron_right),
               ]),
@@ -59,8 +104,10 @@ class GeneralSettingsPage extends StatefulWidget {
 
 class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
   final _form = GlobalKey<FormState>();
-  late final _school = TextEditingController(text: context.read<SettingsStore>().schoolName);
-  late final _year = TextEditingController(text: context.read<SettingsStore>().academicYear);
+  late final _school =
+      TextEditingController(text: context.read<SettingsStore>().schoolName);
+  late final _year =
+      TextEditingController(text: context.read<SettingsStore>().academicYear);
 
   @override
   void dispose() {
@@ -76,17 +123,31 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
         submitLabel: 'Simpan pengaturan',
         onSubmit: () {
           if (!_form.currentState!.validate()) return;
-          context.read<SettingsStore>().update(school: _school.text.trim(), year: _year.text.trim());
+          context
+              .read<SettingsStore>()
+              .update(school: _school.text.trim(), year: _year.text.trim());
           _audit(context, 'Mengubah pengaturan umum');
           snack(context, 'Pengaturan umum disimpan.');
           Navigator.of(context).pop();
         },
         children: [
           FormRow(children: [
-            AppTextField(controller: _school, label: 'Nama sekolah', icon: Icons.school_outlined, validator: (v) => (v == null || v.trim().length < 3) ? 'Wajib diisi' : null),
-            AppTextField(controller: _year, label: 'Tahun ajaran', icon: Icons.calendar_today_outlined, validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null),
+            AppTextField(
+                controller: _school,
+                label: 'Nama sekolah',
+                icon: Icons.school_outlined,
+                validator: (v) =>
+                    (v == null || v.trim().length < 3) ? 'Wajib diisi' : null),
+            AppTextField(
+                controller: _year,
+                label: 'Tahun ajaran',
+                icon: Icons.calendar_today_outlined,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null),
           ]),
-          const AppCard(child: Text('Bahasa aplikasi: Bahasa Indonesia (tetap).', style: TextStyle(fontSize: 13))),
+          const AppCard(
+              child: Text('Bahasa aplikasi: Bahasa Indonesia (tetap).',
+                  style: TextStyle(fontSize: 13))),
         ],
       );
 }
@@ -107,7 +168,9 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
         title: 'Pengaturan Keamanan',
         submitLabel: 'Simpan pengaturan',
         onSubmit: () {
-          context.read<SettingsStore>().update(minPass: _min, session: _session, lockout: _lock);
+          context
+              .read<SettingsStore>()
+              .update(minPass: _min, session: _session, lockout: _lock);
           _audit(context, 'Mengubah pengaturan keamanan');
           snack(context, 'Pengaturan keamanan disimpan.');
           Navigator.of(context).pop();
@@ -118,14 +181,20 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
               label: 'Panjang kata sandi minimal',
               icon: Icons.password,
               value: _min,
-              items: [for (final n in const [6, 8, 10, 12]) DropdownMenuItem(value: n, child: Text('$n karakter'))],
+              items: [
+                for (final n in const [6, 8, 10, 12])
+                  DropdownMenuItem(value: n, child: Text('$n karakter'))
+              ],
               onChanged: (v) => setState(() => _min = v ?? _min),
             ),
             AppDropdown<int>(
               label: 'Batas sesi tidak aktif',
               icon: Icons.timelapse,
               value: _session,
-              items: [for (final n in const [15, 30, 60, 120]) DropdownMenuItem(value: n, child: Text('$n menit'))],
+              items: [
+                for (final n in const [15, 30, 60, 120])
+                  DropdownMenuItem(value: n, child: Text('$n menit'))
+              ],
               onChanged: (v) => setState(() => _session = v ?? _session),
             ),
           ]),
@@ -163,13 +232,29 @@ class _BookingSettingsPageState extends State<BookingSettingsPage> {
         },
         children: [
           AppCard(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Batas waktu persetujuan Sapras', style: TextStyle(fontWeight: FontWeight.w800)),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Batas waktu persetujuan Sapras',
+                  style: TextStyle(fontWeight: FontWeight.w800)),
               const SizedBox(height: 4),
-              const Text('Pengajuan yang tidak diproses dalam batas ini otomatis menjadi booking kedaluwarsa.', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              const Text(
+                  'Pengajuan yang tidak diproses dalam batas ini otomatis menjadi booking kedaluwarsa.',
+                  style:
+                      TextStyle(color: AppColors.textSecondary, fontSize: 13)),
               const SizedBox(height: 12),
-              Center(child: Text('${_h.round()} jam', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: AppColors.navy))),
-              Slider(value: _h, min: 1, max: 48, divisions: 47, label: '${_h.round()} jam', onChanged: (v) => setState(() => _h = v)),
+              Center(
+                  child: Text('${_h.round()} jam',
+                      style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.navy))),
+              Slider(
+                  value: _h,
+                  min: 1,
+                  max: 48,
+                  divisions: 47,
+                  label: '${_h.round()} jam',
+                  onChanged: (v) => setState(() => _h = v)),
             ]),
           ),
         ],
@@ -187,9 +272,22 @@ class AccountSettingsPage extends StatelessWidget {
             child: AppCard(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Column(children: [
-                ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Edit profil'), trailing: const Icon(Icons.chevron_right), onTap: () => push(context, const EditProfilePage())),
-                ListTile(leading: const Icon(Icons.lock_outline), title: const Text('Ubah kata sandi'), trailing: const Icon(Icons.chevron_right), onTap: () => push(context, const ChangePasswordPage())),
-                ListTile(leading: const Icon(Icons.notifications_none), title: const Text('Pengaturan notifikasi'), trailing: const Icon(Icons.chevron_right), onTap: () => push(context, const NotificationSettingsPage())),
+                ListTile(
+                    leading: const Icon(Icons.edit_outlined),
+                    title: const Text('Edit profil'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => push(context, const EditProfilePage())),
+                ListTile(
+                    leading: const Icon(Icons.lock_outline),
+                    title: const Text('Ubah kata sandi'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => push(context, const ChangePasswordPage())),
+                ListTile(
+                    leading: const Icon(Icons.notifications_none),
+                    title: const Text('Pengaturan notifikasi'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () =>
+                        push(context, const NotificationSettingsPage())),
               ]),
             ),
           ),

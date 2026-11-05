@@ -27,13 +27,14 @@ class EmptyState extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 36,
-              backgroundColor: AppColors.blue.withOpacity(0.10),
+              backgroundColor: AppColors.blue.withValues(alpha: 0.10),
               child: Icon(icon, size: 34, color: AppColors.blue),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: AppSpacing.sm),
             Text(message,
                 textAlign: TextAlign.center,
@@ -41,7 +42,8 @@ class EmptyState extends StatelessWidget {
             if (actionLabel != null) ...[
               const SizedBox(height: AppSpacing.md),
               OutlinedButton(
-                style: OutlinedButton.styleFrom(minimumSize: const Size(160, 44)),
+                style:
+                    OutlinedButton.styleFrom(minimumSize: const Size(160, 44)),
                 onPressed: onAction,
                 child: Text(actionLabel!),
               ),
@@ -71,5 +73,6 @@ class ErrorState extends StatelessWidget {
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key});
   @override
-  Widget build(BuildContext context) => const Center(child: CircularProgressIndicator());
+  Widget build(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
 }

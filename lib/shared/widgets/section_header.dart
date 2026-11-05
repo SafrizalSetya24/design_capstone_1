@@ -15,7 +15,9 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(title,
               style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary)),
         ),
         if (actionLabel != null)
           TextButton(onPressed: onAction, child: Text(actionLabel!)),

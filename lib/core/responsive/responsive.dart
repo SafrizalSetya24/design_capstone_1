@@ -16,7 +16,8 @@ class Breakpoints {
   }
 
   /// Jumlah kolom grid berdasarkan lebar area konten (bukan lebar jendela).
-  static int columns(double width, {int mobile = 1, int tablet = 2, int desktop = 3}) {
+  static int columns(double width,
+      {int mobile = 1, int tablet = 2, int desktop = 3}) {
     switch (of(width)) {
       case ScreenSize.mobile:
         return mobile;
@@ -37,13 +38,16 @@ extension ResponsiveContext on BuildContext {
 
 /// Membangun UI berdasarkan lebar area yang tersedia (LayoutBuilder).
 class ResponsiveBuilder extends StatelessWidget {
-  final Widget Function(BuildContext context, ScreenSize size, double width) builder;
+  final Widget Function(BuildContext context, ScreenSize size, double width)
+      builder;
   const ResponsiveBuilder({super.key, required this.builder});
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (c, cons) {
-          final w = cons.maxWidth.isFinite ? cons.maxWidth : MediaQuery.of(c).size.width;
+          final w = cons.maxWidth.isFinite
+              ? cons.maxWidth
+              : MediaQuery.of(c).size.width;
           return builder(c, Breakpoints.of(w), w);
         },
       );

@@ -15,7 +15,10 @@ class SipintarLogo extends StatelessWidget {
         color: inverted ? Colors.white : AppColors.navy,
         borderRadius: BorderRadius.circular(size * 0.28),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 18, offset: const Offset(0, 8)),
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 18,
+              offset: const Offset(0, 8)),
         ],
       ),
       child: Icon(Icons.inventory_2_rounded,

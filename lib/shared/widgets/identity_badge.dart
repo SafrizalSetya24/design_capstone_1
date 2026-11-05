@@ -12,7 +12,9 @@ class IdentityBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = onDark ? Colors.white : AppColors.navy;
-    final bg = onDark ? Colors.white.withOpacity(0.16) : AppColors.blue.withOpacity(0.10);
+    final bg = onDark
+        ? Colors.white.withValues(alpha: 0.16)
+        : AppColors.blue.withValues(alpha: 0.10);
     return Wrap(
       spacing: 8,
       runSpacing: 6,
@@ -23,11 +25,15 @@ class IdentityBadge extends StatelessWidget {
     );
   }
 
-  Widget _chip(String text, Color fg, Color bg, {bool bold = false}) => Container(
+  Widget _chip(String text, Color fg, Color bg, {bool bold = false}) =>
+      Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+        decoration:
+            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
         child: Text(text,
             style: TextStyle(
-                color: fg, fontSize: 12, fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
+                color: fg,
+                fontSize: 12,
+                fontWeight: bold ? FontWeight.w700 : FontWeight.w500)),
       );
 }

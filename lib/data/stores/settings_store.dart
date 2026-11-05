@@ -38,14 +38,36 @@ class SettingsStore extends ChangeNotifier {
   };
 
   final Map<UserRole, Map<String, bool>> permissions = {
-    UserRole.siswa: _mk({'pinjam_unit', 'minta_habis_pakai', 'riwayat', 'notifikasi', 'chatbot'}),
+    UserRole.siswa: _mk({
+      'pinjam_unit',
+      'minta_habis_pakai',
+      'riwayat',
+      'notifikasi',
+      'chatbot'
+    }),
     // Chatbot Guru sengaja nonaktif: mengikuti konfigurasi, tidak diasumsikan aktif.
-    UserRole.guru: _mk({'pinjam_unit', 'minta_habis_pakai', 'riwayat', 'notifikasi'}),
-    UserRole.sapras: _mk({'notifikasi', 'chatbot', 'kelola_inventaris', 'persetujuan', 'penyerahan_pengembalian', 'laporan', 'forecasting'}),
-    UserRole.admin: _mk({'notifikasi', 'kelola_pengguna', 'kelola_role', 'audit_log', 'pengaturan_sistem'}),
+    UserRole.guru:
+        _mk({'pinjam_unit', 'minta_habis_pakai', 'riwayat', 'notifikasi'}),
+    UserRole.sapras: _mk({
+      'notifikasi',
+      'chatbot',
+      'kelola_inventaris',
+      'persetujuan',
+      'penyerahan_pengembalian',
+      'laporan',
+      'forecasting'
+    }),
+    UserRole.admin: _mk({
+      'notifikasi',
+      'kelola_pengguna',
+      'kelola_role',
+      'audit_log',
+      'pengaturan_sistem'
+    }),
   };
 
-  static Map<String, bool> _mk(Set<String> on) => {for (final k in permissionLabels.keys) k: on.contains(k)};
+  static Map<String, bool> _mk(Set<String> on) =>
+      {for (final k in permissionLabels.keys) k: on.contains(k)};
 
   bool can(UserRole r, String key) => permissions[r]?[key] ?? false;
   bool isLocked(UserRole r, String key) => locked[r]?.contains(key) ?? false;
@@ -67,7 +89,12 @@ class SettingsStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  void update({String? school, String? year, int? minPass, int? session, bool? lockout}) {
+  void update(
+      {String? school,
+      String? year,
+      int? minPass,
+      int? session,
+      bool? lockout}) {
     schoolName = school ?? schoolName;
     academicYear = year ?? academicYear;
     minPasswordLength = minPass ?? minPasswordLength;

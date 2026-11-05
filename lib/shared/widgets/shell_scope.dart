@@ -16,8 +16,10 @@ class ShellScope extends InheritedWidget {
     required super.child,
   });
 
-  static ShellScope? maybeOf(BuildContext c) => c.dependOnInheritedWidgetOfExactType<ShellScope>();
+  static ShellScope? maybeOf(BuildContext c) =>
+      c.dependOnInheritedWidgetOfExactType<ShellScope>();
 
   @override
-  bool updateShouldNotify(ShellScope old) => old.showMenu != showMenu || old.current != current;
+  bool updateShouldNotify(ShellScope old) =>
+      old.showMenu != showMenu || old.current != current;
 }

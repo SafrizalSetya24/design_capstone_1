@@ -17,28 +17,37 @@ class AuthLayout extends StatelessWidget {
         final form = SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(cons.maxWidth < Breakpoints.mobile ? AppSpacing.md : AppSpacing.lg),
+              padding: EdgeInsets.all(cons.maxWidth < Breakpoints.mobile
+                  ? AppSpacing.md
+                  : AppSpacing.lg),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 460),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  if (showBack)
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(onPressed: () => Navigator.of(context).maybePop(), icon: const Icon(Icons.arrow_back), label: const Text('Kembali')),
-                    ),
-                  if (!wide) ...[
-                    const Align(alignment: Alignment.centerLeft, child: SipintarLogo(size: 56)),
-                    const SizedBox(height: AppSpacing.md),
-                  ],
-                  child,
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (showBack)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                              onPressed: () => Navigator.of(context).maybePop(),
+                              icon: const Icon(Icons.arrow_back),
+                              label: const Text('Kembali')),
+                        ),
+                      if (!wide) ...[
+                        const Align(
+                            alignment: Alignment.centerLeft,
+                            child: SipintarLogo(size: 56)),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
+                      child,
+                    ]),
               ),
             ),
           ),
         );
         if (!wide) return form;
         return Row(children: [
-          Expanded(flex: 5, child: const _BrandPanel()),
+          const Expanded(flex: 5, child: _BrandPanel()),
           Expanded(flex: 4, child: form),
         ]);
       }),
@@ -55,38 +64,65 @@ class _BrandPanel extends StatelessWidget {
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12)),
               child: Icon(i, color: Colors.white),
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(t, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
-                const SizedBox(height: 2),
-                Text(d, style: const TextStyle(color: Color(0xFFBFD3F5), height: 1.4)),
-              ]),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(t,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16)),
+                    const SizedBox(height: 2),
+                    Text(d,
+                        style: const TextStyle(
+                            color: Color(0xFFBFD3F5), height: 1.4)),
+                  ]),
             ),
           ]),
         );
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.navy, Color(0xFF123B82)]),
+        gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.navy, Color(0xFF123B82)]),
       ),
       padding: const EdgeInsets.all(56),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SipintarLogo(size: 84, inverted: true),
-            const SizedBox(height: 28),
-            const Text('SIPINTAR', style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-            const SizedBox(height: 8),
-            const Text('Kelola Inventaris Sekolah dengan Mudah', style: TextStyle(color: Color(0xFFBFD3F5), fontSize: 18)),
-            const SizedBox(height: 40),
-            feature(Icons.event_available_rounded, 'Pinjam barang tanpa antre', 'Ajukan dari ponsel atau komputer, pantau statusnya langsung.'),
-            feature(Icons.face_retouching_natural, 'Verifikasi wajah', 'Peminjaman barang per unit lebih aman dan tercatat jelas.'),
-            feature(Icons.inventory_2_outlined, 'Inventaris terpantau', 'Kondisi, stok, dan riwayat barang tersimpan rapi.'),
-          ]),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SipintarLogo(size: 84, inverted: true),
+                const SizedBox(height: 28),
+                const Text('SIPINTAR',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5)),
+                const SizedBox(height: 8),
+                const Text('Kelola Inventaris Sekolah dengan Mudah',
+                    style: TextStyle(color: Color(0xFFBFD3F5), fontSize: 18)),
+                const SizedBox(height: 40),
+                feature(
+                    Icons.event_available_rounded,
+                    'Pinjam barang tanpa antre',
+                    'Ajukan dari ponsel atau komputer, pantau statusnya langsung.'),
+                feature(Icons.face_retouching_natural, 'Verifikasi wajah',
+                    'Peminjaman barang per unit lebih aman dan tercatat jelas.'),
+                feature(Icons.inventory_2_outlined, 'Inventaris terpantau',
+                    'Kondisi, stok, dan riwayat barang tersimpan rapi.'),
+              ]),
         ),
       ),
     );

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sipintar/core/theme/app_colors.dart';
 
-enum NotifType { pengajuan, persetujuan, penolakan, kedaluwarsa, pengingat, habisPakai }
+enum NotifType {
+  pengajuan,
+  persetujuan,
+  penolakan,
+  kedaluwarsa,
+  pengingat,
+  habisPakai
+}
 
 extension NotifTypeX on NotifType {
   String get label => switch (this) {
@@ -62,7 +69,8 @@ class ChatSession {
   String title;
   final List<ChatMessage> messages;
   DateTime updated;
-  ChatSession({required this.id, required this.title, List<ChatMessage>? messages})
+  ChatSession(
+      {required this.id, required this.title, List<ChatMessage>? messages})
       : messages = messages ?? [],
         updated = DateTime.now();
 }

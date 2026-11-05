@@ -22,7 +22,8 @@ class ChatStore extends ChangeNotifier {
   int _n = 0;
 
   String get _uid => _auth.currentUser?.id ?? '-';
-  List<ChatSession> get sessions => _sessions.putIfAbsent(_uid, () => [_fresh()]);
+  List<ChatSession> get sessions =>
+      _sessions.putIfAbsent(_uid, () => [_fresh()]);
   ChatSession get active {
     final id = _activeId[_uid];
     return sessions.firstWhere((s) => s.id == id, orElse: () => sessions.first);
@@ -66,7 +67,9 @@ class ChatStore extends ChangeNotifier {
     final t = text.trim();
     if (t.isEmpty || loading) return;
     final s = active;
-    if (s.messages.isEmpty) s.title = t.length > 32 ? '${t.substring(0, 32)}...' : t;
+    if (s.messages.isEmpty) {
+      s.title = t.length > 32 ? '${t.substring(0, 32)}...' : t;
+    }
     s.messages.add(ChatMessage(t, true));
     s.updated = DateTime.now();
     loading = true;
@@ -80,15 +83,22 @@ class ChatStore extends ChangeNotifier {
   String _answer(String q) {
     final me = _auth.currentUser;
     final isStaff = me?.role == UserRole.sapras;
-    if (q.contains('stok') || q.contains('habis pakai') || q.contains('menipis') || q.contains('kertas') || q.contains('spidol')) {
+    if (q.contains('stok') ||
+        q.contains('habis pakai') ||
+        q.contains('menipis') ||
+        q.contains('kertas') ||
+        q.contains('spidol')) {
       for (final i in _cons.items) {
-        if (q.contains(i.name.toLowerCase().split(' ').first) && !q.contains('menipis')) {
+        if (q.contains(i.name.toLowerCase().split(' ').first) &&
+            !q.contains('menipis')) {
           return 'Stok ${i.name} saat ini ${i.stock} ${i.satuan} (minimum ${i.minStock}).'
               '${i.low ? ' Stok sudah menipis.' : ''}';
         }
       }
       final low = _cons.lowStock;
-      if (low.isEmpty) return 'Semua barang habis pakai masih di atas stok minimum.';
+      if (low.isEmpty) {
+        return 'Semua barang habis pakai masih di atas stok minimum.';
+      }
       return 'Barang dengan stok menipis:\n${low.map((i) => '- ${i.name}: ${i.stock} ${i.satuan} (min. ${i.minStock})').join('\n')}';
     }
     if (q.contains('rusak') || q.contains('perbaik')) {
@@ -99,7 +109,10 @@ class ChatStore extends ChangeNotifier {
     if (q.contains('cara') || q.contains('ajukan')) {
       return 'Cara meminjam barang per unit:\n1. Buka tab Katalog lalu pilih barang.\n2. Tekan Ajukan peminjaman dan isi jumlah, jadwal, serta tujuan.\n3. Konfirmasi ringkasan, lalu lakukan verifikasi wajah.\n4. Tunggu persetujuan Sapras maksimal 12 jam.';
     }
-    if (q.contains('status') || q.contains('pengajuan') || q.contains('pinjam') || q.contains('peminjaman')) {
+    if (q.contains('status') ||
+        q.contains('pengajuan') ||
+        q.contains('pinjam') ||
+        q.contains('peminjaman')) {
       if (isStaff) {
         final p = _loans.count({LoanStatus.menungguPersetujuan});
         final c = _cons.countStatus(ConsumableStatus.menunggu);

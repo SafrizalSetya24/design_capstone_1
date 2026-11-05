@@ -7,13 +7,21 @@ class NotificationStore extends ChangeNotifier {
   int _n = 100;
 
   List<AppNotification> forUser(String id) =>
-      items.where((n) => n.userId == id).toList()..sort((a, b) => b.time.compareTo(a.time));
+      items.where((n) => n.userId == id).toList()
+        ..sort((a, b) => b.time.compareTo(a.time));
   int unread(String id) => items.where((n) => n.userId == id && !n.read).length;
 
-  void add(String userId, NotifType type, String title, String body, {String? refId, bool loan = true}) {
+  void add(String userId, NotifType type, String title, String body,
+      {String? refId, bool loan = true}) {
     items.add(AppNotification(
-        id: 'n${_n++}', userId: userId, type: type, title: title, body: body, time: DateTime.now(),
-        refId: refId, refIsLoan: loan));
+        id: 'n${_n++}',
+        userId: userId,
+        type: type,
+        title: title,
+        body: body,
+        time: DateTime.now(),
+        refId: refId,
+        refIsLoan: loan));
     notifyListeners();
   }
 

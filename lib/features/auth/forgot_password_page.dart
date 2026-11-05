@@ -34,7 +34,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       snack(context, 'Email tidak terdaftar.', error: true);
       return;
     }
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ResetPasswordPage(email: _email.text.trim())));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => ResetPasswordPage(email: _email.text.trim())));
   }
 
   @override
@@ -43,20 +44,31 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showBack: true,
       child: Form(
         key: _form,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Lupa kata sandi', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy)),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('Lupa kata sandi',
+              style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.navy)),
           const SizedBox(height: 4),
-          const Text('Masukkan email akun Anda. Kode reset dikirim melalui email (simulasi).', style: TextStyle(color: AppColors.textSecondary)),
+          const Text(
+              'Masukkan email akun Anda. Kode reset dikirim melalui email (simulasi).',
+              style: TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.lg),
           AppTextField(
             controller: _email,
             label: 'Email',
             icon: Icons.mail_outline,
             keyboardType: TextInputType.emailAddress,
-            validator: (v) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v?.trim() ?? '') ? null : 'Masukkan email yang valid',
+            validator: (v) =>
+                RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v?.trim() ?? '')
+                    ? null
+                    : 'Masukkan email yang valid',
           ),
           const SizedBox(height: AppSpacing.lg),
-          PrimaryButton(label: 'Kirim kode reset', loading: _loading, onPressed: _send),
+          PrimaryButton(
+              label: 'Kirim kode reset', loading: _loading, onPressed: _send),
         ]),
       ),
     );
@@ -92,7 +104,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         title: 'Kata sandi diperbarui',
         message: 'Silakan masuk menggunakan kata sandi baru Anda.',
         primaryLabel: 'Ke halaman masuk',
-        onPrimary: (c) => Navigator.of(c, rootNavigator: true).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false),
+        onPrimary: (c) => Navigator.of(c, rootNavigator: true)
+            .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false),
       ),
     ));
   }
@@ -104,10 +117,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       showBack: true,
       child: Form(
         key: _form,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Atur ulang kata sandi', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.navy)),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('Atur ulang kata sandi',
+              style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.navy)),
           const SizedBox(height: 4),
-          Text('Kode dikirim ke ${widget.email} (simulasi). Gunakan kode 123456.', style: const TextStyle(color: AppColors.textSecondary)),
+          Text(
+              'Kode dikirim ke ${widget.email} (simulasi). Gunakan kode 123456.',
+              style: const TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.lg),
           AppTextField(
             controller: _code,
@@ -116,7 +136,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             keyboardType: TextInputType.number,
             formatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
-            validator: (v) => v?.trim() == '123456' ? null : 'Kode tidak sesuai',
+            validator: (v) =>
+                v?.trim() == '123456' ? null : 'Kode tidak sesuai',
           ),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
@@ -124,7 +145,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             label: 'Kata sandi baru',
             icon: Icons.lock_outline,
             isPassword: true,
-            validator: (v) => (v == null || v.length < minPass) ? 'Kata sandi minimal $minPass karakter' : null,
+            validator: (v) => (v == null || v.length < minPass)
+                ? 'Kata sandi minimal $minPass karakter'
+                : null,
           ),
           const SizedBox(height: AppSpacing.md),
           AppTextField(

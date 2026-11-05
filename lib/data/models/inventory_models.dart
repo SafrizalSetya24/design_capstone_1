@@ -23,8 +23,12 @@ class AssetUnit {
   final String code;
   ItemCondition condition;
   UnitStatus status;
-  AssetUnit({required this.code, this.condition = ItemCondition.layak, this.status = UnitStatus.tersedia});
-  bool get borrowable => condition == ItemCondition.layak && status == UnitStatus.tersedia;
+  AssetUnit(
+      {required this.code,
+      this.condition = ItemCondition.layak,
+      this.status = UnitStatus.tersedia});
+  bool get borrowable =>
+      condition == ItemCondition.layak && status == UnitStatus.tersedia;
 }
 
 class UnitItem {
@@ -159,5 +163,9 @@ class Category {
   String name;
   CategoryType type;
   String description;
-  Category({required this.id, required this.name, required this.type, required this.description});
+  Category(
+      {required this.id,
+      required this.name,
+      required this.type,
+      required this.description});
 }
