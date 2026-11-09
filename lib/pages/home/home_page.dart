@@ -272,16 +272,21 @@ class HomePage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            FilledButton.tonalIcon(
+                            FilledButton.icon(
                               style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
+                                    horizontal: 14, vertical: 8),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8)),
                               ),
-                              icon: const Icon(Icons.arrow_forward, size: 16),
+                              icon: const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
                               label: const Text('Mulai Pinjam',
-                                  style: TextStyle(fontSize: 12)),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
                               onPressed: () => Navigator.of(context).push(
                                 MaterialPageRoute(
                                     builder: (_) => const ItemCategoryPage()),

@@ -179,8 +179,10 @@ class _SaprasBarcodeScannerPageState extends State<SaprasBarcodeScannerPage> {
                       runSpacing: 8,
                       children: availableUnits.map((u) {
                         return ActionChip(
-                          avatar: const Icon(Icons.qr_code, size: 14),
-                          label: Text(u.code, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                          backgroundColor: const Color(0xFFEFF6FF),
+                          side: const BorderSide(color: Color(0xFF93C5FD), width: 1.2),
+                          avatar: const Icon(Icons.qr_code, size: 14, color: AppColors.primary),
+                          label: Text(u.code, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.navy)),
                           onPressed: () => _onScanCode(u.code),
                         );
                       }).toList(),

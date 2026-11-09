@@ -283,12 +283,15 @@ class _ItemLinesEditorState extends State<ItemLinesEditor> {
                   onChanged: (v) => setState(() => _qty = v)),
               const SizedBox(width: 12),
               Expanded(
-                child: FilledButton.tonalIcon(
+                child: FilledButton.icon(
                   style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(48)),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(0, 48)),
                   onPressed: cur == null ? null : _add,
-                  icon: const Icon(Icons.add_shopping_cart),
-                  label: const Text('Tambahkan'),
+                  icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
+                  label: const Text('Tambahkan',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
               ),
             ]),

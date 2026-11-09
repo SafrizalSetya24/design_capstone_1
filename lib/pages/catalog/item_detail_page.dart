@@ -69,23 +69,89 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       category: widget.category,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-            '$_qty ${widget.satuan} ${widget.name} ditambahkan ke keranjang.'),
-        action: SnackBarAction(
-          label: 'Buka Keranjang',
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CartPage()),
-            );
-          },
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.check_circle,
+                    color: Colors.green.shade600, size: 34),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Berhasil Masuk Keranjang',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.navy,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '$_qty ${widget.satuan} ${widget.name} telah ditambahkan ke keranjang peminjaman.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 13, color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 22),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(sheetCtx).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Pilih Barang Lain'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      icon: const Icon(Icons.shopping_cart_checkout, size: 18),
+                      label: const Text('Buka Keranjang'),
+                      onPressed: () {
+                        Navigator.of(sheetCtx).pop();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (_) => const CartPage()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        duration: const Duration(seconds: 3),
       ),
     );
-
-    Navigator.of(context).pop();
   }
 
   @override

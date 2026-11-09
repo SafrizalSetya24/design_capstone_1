@@ -351,9 +351,11 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
                                 'Di keranjang: ${inCart.qty}',
                                 style: const TextStyle(fontSize: 11, color: AppColors.primary),
                               ),
-                            FilledButton.tonal(
+                            FilledButton(
                               style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               ),
                               onPressed: available > 0
@@ -372,7 +374,7 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
                                         ),
                                       )
                                   : null,
-                              child: const Text('Pilih', style: TextStyle(fontSize: 12)),
+                              child: const Text('Pilih', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.white)),
                             ),
                           ],
                         ),
@@ -472,9 +474,11 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
                                 'Di keranjang: ${inCart.qty}',
                                 style: const TextStyle(fontSize: 11, color: Colors.teal),
                               ),
-                            FilledButton.tonal(
+                            FilledButton(
                               style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                backgroundColor: Colors.teal.shade700,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               ),
                               onPressed: stock > 0
@@ -493,7 +497,7 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
                                         ),
                                       )
                                   : null,
-                              child: const Text('Pilih', style: TextStyle(fontSize: 12)),
+                              child: const Text('Pilih', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.white)),
                             ),
                           ],
                         ),

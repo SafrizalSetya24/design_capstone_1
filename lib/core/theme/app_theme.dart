@@ -59,20 +59,47 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.navy,
+          foregroundColor: Colors.white,
           minimumSize: const Size(0, 48),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.navy,
           minimumSize: const Size(0, 48),
-          side: const BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.navy, width: 1.5),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.navy,
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFFF1F5F9),
+        disabledColor: const Color(0xFFE2E8F0),
+        selectedColor: AppColors.navy.withValues(alpha: 0.15),
+        secondarySelectedColor: AppColors.navy,
+        labelStyle: const TextStyle(
+          color: AppColors.navy,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(color: Color(0xFFCBD5E1), width: 1),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -94,6 +121,23 @@ class AppTheme {
         unselectedLabelColor: AppColors.textSecondary,
         labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
         unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.navy,
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w500,
+        ),
+        actionTextColor: const Color(0xFFFBBF24),
+        showCloseIcon: true,
+        closeIconColor: Colors.white70,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       ),
     );
   }

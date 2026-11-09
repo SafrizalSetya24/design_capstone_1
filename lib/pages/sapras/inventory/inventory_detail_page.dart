@@ -107,9 +107,15 @@ class SaprasInventoryDetailPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Daftar Unit Fisik & Barcode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      FilledButton.tonalIcon(
-                        icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Tambah Unit'),
+                      FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        icon: const Icon(Icons.add, size: 16, color: Colors.white),
+                        label: const Text('Tambah Unit', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                         onPressed: () => _showAddUnitDialog(context, inv),
                       ),
                     ],

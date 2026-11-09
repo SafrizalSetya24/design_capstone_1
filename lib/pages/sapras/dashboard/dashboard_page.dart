@@ -303,11 +303,17 @@ class SaprasDashboardPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          FilledButton.tonal(
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
                             onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => SaprasBorrowingDetailPage(request: req)),
                             ),
-                            child: const Text('Review', style: TextStyle(fontSize: 12)),
+                            child: const Text('Review', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
                           ),
                         ],
                       ),

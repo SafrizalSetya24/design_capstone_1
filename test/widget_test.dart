@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:sipintar/app/adaptive_shell.dart';
 import 'package:sipintar/app/routes.dart';
+import 'package:sipintar/core/core.dart';
 import 'package:sipintar/data/data.dart';
 import 'package:sipintar/main.dart';
 import 'package:sipintar/pages/auth/login_page.dart';
 import 'package:sipintar/pages/catalog/item_category_page.dart';
+import 'package:sipintar/pages/catalog/item_detail_page.dart';
 import 'package:sipintar/pages/history/borrowing_history_page.dart';
 import 'package:sipintar/pages/home/home_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
@@ -209,6 +211,41 @@ void main() {
     await tester.enterText(inputFinder, '3374012345670001');
     await tester.pump();
     expect(find.textContaining('Guru: Siti Nurhaliza'), findsOneWidget);
+  });
+
+  testWidgets('LoginPage renders split-screen hero showcase on desktop viewport', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+        ],
+        child: const MaterialApp(
+          home: LoginPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Verifikasi Hero Showcase di sebelah kiri
+    expect(find.text('SMK MUHAMMADIYAH 1 SUKOHARJO'), findsOneWidget);
+    expect(find.text('Biometrik Face Recognition'), findsOneWidget);
+    expect(find.text('Dual-Katalog & Mixed Cart'), findsOneWidget);
+    expect(find.text('Approval SLA 2 Jam Sarpras'), findsOneWidget);
+
+    // Verifikasi Form di sebelah kanan
+    expect(find.text('Masuk Aplikasi'), findsNWidgets(2)); // Header form & PrimaryButton label
+    expect(find.byType(TextFormField), findsNWidgets(2));
   });
 
   testWidgets('Test back button on ItemCategoryPage when pushed from HomePage', (tester) async {
@@ -480,5 +517,65 @@ void main() {
     expect(find.text('Selamat datang,'), findsOneWidget);
     expect(find.text('Alur Peminjaman Barang (SOP 6 Langkah)'), findsOneWidget);
     expect(find.text('Pinjam Barang'), findsOneWidget);
+  });
+
+  testWidgets('ItemDetailPage add to cart shows bottom sheet and updates cart', (tester) async {
+    final settings = SettingsStore();
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+    final notif = NotificationStore();
+    final inventory = InventoryStore(auth, audit);
+    final consumables = ConsumableStore(auth, audit, notif);
+    final loans = LoanStore(auth, audit, notif, inventory, settings);
+    final chat = ChatStore(auth, inventory, consumables, loans);
+    final cart = CartStore();
+
+    auth.demoLogin('sw1');
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: settings),
+          ChangeNotifierProvider.value(value: audit),
+          ChangeNotifierProvider.value(value: auth),
+          ChangeNotifierProvider.value(value: notif),
+          ChangeNotifierProvider.value(value: inventory),
+          ChangeNotifierProvider.value(value: consumables),
+          ChangeNotifierProvider.value(value: loans),
+          ChangeNotifierProvider.value(value: chat),
+          ChangeNotifierProvider.value(value: cart),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ItemDetailPage(
+            id: 'it1',
+            name: 'Laptop Asus Vivobook 14',
+            category: 'Laptop',
+            description: 'Laptop Core i5 untuk lab dan presentasi',
+            iconKey: 'laptop',
+            maxAvailable: 5,
+            kind: ItemKind.perUnit,
+            satuan: 'unit',
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Pastikan tombol Tambahkan ke Keranjang ada
+    final addBtn = find.text('Tambahkan ke Keranjang');
+    expect(addBtn, findsOneWidget);
+    await tester.ensureVisible(addBtn);
+    await tester.pumpAndSettle();
+    await tester.tap(addBtn);
+    await tester.pumpAndSettle();
+
+    // Verifikasi Bottom Sheet berhasil muncul
+    expect(find.text('Berhasil Masuk Keranjang'), findsOneWidget);
+    expect(find.text('Pilih Barang Lain'), findsOneWidget);
+    expect(find.text('Buka Keranjang'), findsOneWidget);
+    expect(cart.itemCount, equals(1));
+    expect(cart.getById('it1')?.qty, equals(1));
   });
 }

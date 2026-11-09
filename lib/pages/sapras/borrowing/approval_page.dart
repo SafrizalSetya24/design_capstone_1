@@ -67,11 +67,17 @@ class SaprasApprovalPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          FilledButton.tonal(
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
                             onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => SaprasBorrowingDetailPage(request: req)),
                             ),
-                            child: const Text('Buka & Putuskan'),
+                            child: const Text('Buka & Putuskan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                           ),
                         ],
                       ),
