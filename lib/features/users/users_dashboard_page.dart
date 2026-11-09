@@ -39,13 +39,13 @@ class UsersDashboardPage extends StatelessWidget {
     final acts = <_Act>[
       for (final l in loans)
         _Act(l.submittedAt, '${l.id} - ${l.summary}', Fmt.range(l.start, l.end),
-            l.status.label, () => push(context, LoanDetailPage(loanId: l.id))),
+            StatusBadge.extractLabel(l.status), () => push(context, LoanDetailPage(loanId: l.id))),
       for (final r in reqs)
         _Act(
             r.createdAt,
             '${r.id} - ${r.summary}',
             'Barang habis pakai - ${Fmt.dateTime(r.createdAt)}',
-            r.status.label,
+            StatusBadge.extractLabel(r.status),
             () => push(context, ConsumableRequestDetailPage(requestId: r.id))),
     ]..sort((a, b) => b.time.compareTo(a.time));
 

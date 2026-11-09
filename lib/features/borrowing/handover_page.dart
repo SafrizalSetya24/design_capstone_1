@@ -26,7 +26,7 @@ class HandoverPage extends StatelessWidget {
           ],
           trailing: open
               ? const Icon(Icons.chevron_right)
-              : StatusBadge.fromStatus(l.status.label),
+              : StatusBadge.status(l.status),
           onTap: open
               ? () => push(context, HandoverDetailPage(loanId: l.id))
               : null,

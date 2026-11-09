@@ -18,18 +18,18 @@ Future<bool> confirm(BuildContext c,
     bool danger = false}) async {
   final r = await showDialog<bool>(
     context: c,
-    builder: (_) => AlertDialog(
+    builder: (dialogCtx) => AlertDialog(
       title: Text(title),
       content: Text(message),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(c, false),
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
             child: const Text('Batal')),
         FilledButton(
           style: FilledButton.styleFrom(
               backgroundColor: danger ? AppColors.danger : AppColors.navy,
               minimumSize: const Size(96, 44)),
-          onPressed: () => Navigator.pop(c, true),
+          onPressed: () => Navigator.of(dialogCtx).pop(true),
           child: Text(confirmLabel),
         ),
       ],

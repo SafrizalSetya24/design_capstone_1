@@ -50,7 +50,7 @@ class UnitDetailPage extends StatelessWidget {
                   ('Kategori', ref.item.category),
                   ('Lokasi', ref.item.location),
                 ],
-                trailing: StatusBadge.fromStatus(u.status.label)),
+                trailing: StatusBadge.status(u.status)),
             const SizedBox(height: 8),
             AppCard(
               child: Row(children: [
@@ -86,7 +86,7 @@ class UnitDetailPage extends StatelessWidget {
                     title: '${l.id} - ${l.borrower.name}',
                     subtitle:
                         '${l.borrower.role.label} - ${Fmt.range(l.start, l.end)}',
-                    trailing: StatusBadge.fromStatus(l.status.label)),
+                    trailing: StatusBadge.status(l.status)),
             const SizedBox(height: AppSpacing.md),
             const SectionHeader('Riwayat kerusakan dan perbaikan'),
             const SizedBox(height: 8),
@@ -99,7 +99,7 @@ class UnitDetailPage extends StatelessWidget {
                 RowCard(
                   title: r.issue,
                   subtitle: 'Dilaporkan ${Fmt.date(r.reportedAt)}',
-                  trailing: StatusBadge.fromStatus(r.status.label),
+                  trailing: StatusBadge.status(r.status),
                   onTap: () => push(context, RepairDetailPage(repairId: r.id)),
                 ),
             const SizedBox(height: AppSpacing.md),

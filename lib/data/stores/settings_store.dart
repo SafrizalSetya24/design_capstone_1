@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:sipintar/data/models/user_model.dart';
 
 class SettingsStore extends ChangeNotifier {
-  int approvalHours = 12;
-  String schoolName = 'SMK Nusantara';
+  int approvalHours = 2;
+  String schoolName = 'SMK Muhammadiyah';
   String academicYear = '2026/2027';
   int minPasswordLength = 8;
   int sessionMinutes = 30;

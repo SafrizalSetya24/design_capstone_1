@@ -167,7 +167,7 @@ class _ReportsPageState extends State<ReportsPage> {
                       cellText(r.unit.code, bold: true),
                       cellText(r.item.name),
                       StatusBadge.fromStatus(r.unit.condition.label),
-                      StatusBadge.fromStatus(r.unit.status.label)
+                      StatusBadge.status(r.unit.status)
                     ]
                 ],
               )),
@@ -195,7 +195,7 @@ class _ReportsPageState extends State<ReportsPage> {
                       cellText(l.borrower.role.label),
                       cellText(l.summary),
                       cellText(Fmt.range(l.start, l.end)),
-                      StatusBadge.fromStatus(l.status.label)
+                      StatusBadge.status(l.status)
                     ],
                 ],
               )),

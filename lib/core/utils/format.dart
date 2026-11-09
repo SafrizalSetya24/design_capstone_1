@@ -40,3 +40,5 @@ class Fmt {
     return date(d);
   }
 }
+
+typedef Format = Fmt;

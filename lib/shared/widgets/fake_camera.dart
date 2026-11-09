@@ -181,3 +181,17 @@ class _ScanPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _ScanPainter old) => true;
 }
+
+
+class FakeCamera extends StatelessWidget {
+  final bool isFront;
+  const FakeCamera({super.key, this.isFront = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return _cameraBase(
+      child: const SizedBox.expand(),
+      icon: isFront ? Icons.person_rounded : Icons.qr_code_scanner,
+    );
+  }
+}

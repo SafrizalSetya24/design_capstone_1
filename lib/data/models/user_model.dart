@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum UserRole { siswa, guru, sapras, admin }
+enum UserRole {
+  siswa('Siswa'),
+  guru('Guru'),
+  sapras('Sapras'),
+  admin('Admin');
 
-extension UserRoleX on UserRole {
-  String get label => switch (this) {
-        UserRole.siswa => 'Siswa',
-        UserRole.guru => 'Guru',
-        UserRole.sapras => 'Sapras',
-        UserRole.admin => 'Admin',
-      };
+  final String label;
+  const UserRole(this.label);
 }
 
 class ProfileField {
@@ -83,6 +82,7 @@ class Siswa extends AppUser {
 class Guru extends AppUser {
   final String nik;
   final String mataPelajaran;
+  String get jabatan => mataPelajaran;
   const Guru(
       {required super.id,
       required super.name,

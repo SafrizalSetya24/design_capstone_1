@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:sipintar/data/data.dart';
-import 'package:sipintar/features/account/profile_page.dart';
-import 'package:sipintar/features/admin/admin_dashboard_page.dart';
-import 'package:sipintar/features/admin/audit_log_page.dart';
-import 'package:sipintar/features/admin/category_management_page.dart';
-import 'package:sipintar/features/admin/role_management_page.dart';
-import 'package:sipintar/features/admin/system_settings_page.dart';
-import 'package:sipintar/features/admin/user_management_page.dart';
-import 'package:sipintar/features/borrowing/handover_page.dart';
-import 'package:sipintar/features/borrowing/loan_approvals_page.dart';
-import 'package:sipintar/features/borrowing/returns_page.dart';
-import 'package:sipintar/features/chatbot/chat_page.dart';
-import 'package:sipintar/features/consumables/consumable_approvals_page.dart';
-import 'package:sipintar/features/consumables/consumable_management_page.dart';
-import 'package:sipintar/features/forecasting/forecasting_page.dart';
-import 'package:sipintar/features/inventory/condition_repair_page.dart';
-import 'package:sipintar/features/inventory/inventory_management_page.dart';
-import 'package:sipintar/features/inventory/scan_page.dart';
-import 'package:sipintar/features/notifications/notifications_page.dart';
-import 'package:sipintar/features/reports/reports_page.dart';
-import 'package:sipintar/features/sapras/sapras_dashboard_page.dart';
-import 'package:sipintar/features/users/catalog_page.dart';
-import 'package:sipintar/features/users/history_page.dart';
-import 'package:sipintar/features/users/users_dashboard_page.dart';
+import 'package:sipintar/pages/home/home_page.dart';
+import 'package:sipintar/pages/catalog/item_category_page.dart';
+import 'package:sipintar/pages/cart/cart_page.dart';
+import 'package:sipintar/pages/history/borrowing_history_page.dart';
+import 'package:sipintar/pages/notification/notification_page.dart';
+import 'package:sipintar/pages/profile/profile_page.dart';
+
+import 'package:sipintar/pages/sapras/dashboard/dashboard_page.dart' as sp_dash;
+import 'package:sipintar/pages/sapras/borrowing/borrowing_list_page.dart' as sp_borrow;
+import 'package:sipintar/pages/sapras/return/return_list_page.dart' as sp_return;
+import 'package:sipintar/pages/sapras/inventory/inventory_list_page.dart' as sp_inv;
+import 'package:sipintar/pages/sapras/consumables/consumable_list_page.dart' as sp_cons;
+import 'package:sipintar/pages/sapras/repair/repair_list_page.dart' as sp_repair;
+import 'package:sipintar/pages/sapras/notifications/notification_page.dart' as sp_notif;
+
+import 'package:sipintar/pages/admin/dashboard/dashboard_page.dart' as adm_dash;
+import 'package:sipintar/pages/admin/users/user_list_page.dart' as adm_users;
+import 'package:sipintar/pages/admin/roles/role_page.dart' as adm_roles;
+import 'package:sipintar/pages/admin/categories/category_page.dart' as adm_cat;
+import 'package:sipintar/pages/admin/item_types/item_type_page.dart' as adm_types;
+import 'package:sipintar/pages/admin/locations/location_page.dart' as adm_loc;
+import 'package:sipintar/pages/admin/audit_logs/audit_log_page.dart' as adm_audit;
 
 class NavItem {
   final String id, label, short, group;
@@ -42,8 +41,6 @@ class NavItem {
         selectedIcon = selectedIcon ?? icon;
 }
 
-/// Menu navigasi sesuai role. Siswa dan Guru memakai menu yang sama,
-/// Sapras dan Admin memakai menu sesuai kewenangannya.
 List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
   final role = user.role;
   switch (role) {
@@ -51,214 +48,178 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
     case UserRole.guru:
       return [
         NavItem(
-            id: 'beranda',
-            label: 'Beranda',
-            group: 'Menu',
-            icon: Icons.home_outlined,
-            selectedIcon: Icons.home,
-            bottom: true,
-            builder: (_) => const UsersDashboardPage()),
+          id: 'beranda',
+          label: 'Beranda',
+          group: 'Menu',
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home,
+          bottom: true,
+          builder: (_) => const HomePage(),
+        ),
         NavItem(
-            id: 'katalog',
-            label: 'Katalog',
-            group: 'Menu',
-            icon: Icons.inventory_2_outlined,
-            selectedIcon: Icons.inventory_2,
-            bottom: true,
-            builder: (a) => CatalogPage(initialTab: a)),
+          id: 'katalog',
+          label: 'Katalog',
+          group: 'Menu',
+          icon: Icons.inventory_2_outlined,
+          selectedIcon: Icons.inventory_2,
+          bottom: true,
+          builder: (_) => const ItemCategoryPage(),
+        ),
         NavItem(
-            id: 'riwayat',
-            label: 'Riwayat',
-            group: 'Menu',
-            icon: Icons.history,
-            bottom: true,
-            builder: (_) => const HistoryPage()),
+          id: 'keranjang',
+          label: 'Keranjang',
+          group: 'Menu',
+          icon: Icons.shopping_cart_outlined,
+          selectedIcon: Icons.shopping_cart,
+          bottom: true,
+          builder: (_) => const CartPage(),
+        ),
         NavItem(
-            id: 'notifikasi',
-            label: 'Notifikasi',
-            group: 'Menu',
-            icon: Icons.notifications_none,
-            selectedIcon: Icons.notifications,
-            bottom: true,
-            builder: (_) => const NotificationsPage()),
+          id: 'riwayat',
+          label: 'Riwayat',
+          group: 'Menu',
+          icon: Icons.history,
+          bottom: true,
+          builder: (_) => const BorrowingHistoryPage(),
+        ),
         NavItem(
-            id: 'profil',
-            label: 'Profil',
-            group: 'Menu',
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-            bottom: true,
-            builder: (_) => const ProfilePage()),
-        if (s.can(role, 'chatbot'))
-          NavItem(
-              id: 'chatbot',
-              label: 'Asisten AI',
-              group: 'Bantuan',
-              icon: Icons.smart_toy_outlined,
-              selectedIcon: Icons.smart_toy,
-              builder: (_) => const ChatPage()),
+          id: 'notifikasi',
+          label: 'Notifikasi',
+          group: 'Menu',
+          icon: Icons.notifications_none,
+          selectedIcon: Icons.notifications,
+          bottom: true,
+          builder: (_) => const NotificationPage(),
+        ),
+        NavItem(
+          id: 'profil',
+          label: 'Profil',
+          group: 'Menu',
+          icon: Icons.person_outline,
+          selectedIcon: Icons.person,
+          bottom: false,
+          builder: (_) => const ProfilePage(),
+        ),
       ];
+
     case UserRole.sapras:
       return [
         NavItem(
-            id: 'dashboard',
-            label: 'Dashboard',
-            group: 'Utama',
-            icon: Icons.dashboard_outlined,
-            selectedIcon: Icons.dashboard,
-            builder: (_) => const SaprasDashboardPage()),
+          id: 'dashboard',
+          label: 'Dashboard',
+          group: 'Operasional',
+          icon: Icons.dashboard_outlined,
+          selectedIcon: Icons.dashboard,
+          builder: (_) => const sp_dash.SaprasDashboardPage(),
+        ),
         NavItem(
-            id: 'inventaris',
-            label: 'Manajemen Inventaris',
-            short: 'Inventaris',
-            group: 'Inventaris',
-            icon: Icons.inventory_2_outlined,
-            selectedIcon: Icons.inventory_2,
-            builder: (_) => const InventoryManagementPage()),
+          id: 'peminjaman',
+          label: 'Peminjaman',
+          group: 'Operasional',
+          icon: Icons.assignment_outlined,
+          selectedIcon: Icons.assignment,
+          builder: (_) => const sp_borrow.SaprasBorrowingListPage(),
+        ),
         NavItem(
-            id: 'scan',
-            label: 'Scan Barcode',
-            short: 'Scan',
-            group: 'Inventaris',
-            icon: Icons.qr_code_scanner,
-            builder: (_) => const ScanPage()),
+          id: 'pengembalian',
+          label: 'Pengembalian Unit',
+          group: 'Operasional',
+          icon: Icons.keyboard_return_rounded,
+          selectedIcon: Icons.keyboard_return,
+          builder: (_) => const sp_return.SaprasReturnListPage(),
+        ),
         NavItem(
-            id: 'kondisi',
-            label: 'Kondisi dan Perbaikan',
-            short: 'Kondisi',
-            group: 'Inventaris',
-            icon: Icons.build_outlined,
-            selectedIcon: Icons.build,
-            builder: (_) => const ConditionRepairPage()),
+          id: 'inventaris',
+          label: 'Inventaris Per Unit',
+          group: 'Gudang',
+          icon: Icons.inventory_2_outlined,
+          selectedIcon: Icons.inventory_2,
+          builder: (_) => const sp_inv.SaprasInventoryListPage(),
+        ),
         NavItem(
-            id: 'stok',
-            label: 'Barang Habis Pakai',
-            short: 'Stok',
-            group: 'Inventaris',
-            icon: Icons.layers_outlined,
-            selectedIcon: Icons.layers,
-            builder: (_) => const ConsumableManagementPage()),
+          id: 'habis_pakai',
+          label: 'Barang Habis Pakai',
+          group: 'Gudang',
+          icon: Icons.draw_outlined,
+          selectedIcon: Icons.draw,
+          builder: (_) => const sp_cons.SaprasConsumableListPage(),
+        ),
         NavItem(
-            id: 'persetujuan',
-            label: 'Persetujuan Peminjaman',
-            short: 'Persetujuan',
-            group: 'Transaksi',
-            icon: Icons.fact_check_outlined,
-            selectedIcon: Icons.fact_check,
-            builder: (_) => const LoanApprovalsPage()),
+          id: 'perbaikan',
+          label: 'Perbaikan (Repair)',
+          group: 'Gudang',
+          icon: Icons.build_outlined,
+          selectedIcon: Icons.build,
+          builder: (_) => const sp_repair.SaprasRepairListPage(),
+        ),
         NavItem(
-            id: 'penyerahan',
-            label: 'Penyerahan Barang',
-            short: 'Penyerahan',
-            group: 'Transaksi',
-            icon: Icons.outbox_outlined,
-            selectedIcon: Icons.outbox,
-            builder: (_) => const HandoverPage()),
-        NavItem(
-            id: 'pengembalian',
-            label: 'Pengembalian Barang',
-            short: 'Pengembalian',
-            group: 'Transaksi',
-            icon: Icons.move_to_inbox_outlined,
-            selectedIcon: Icons.move_to_inbox,
-            builder: (_) => const ReturnsPage()),
-        NavItem(
-            id: 'persetujuan_hp',
-            label: 'Persetujuan Habis Pakai',
-            short: 'Permintaan',
-            group: 'Transaksi',
-            icon: Icons.rule_folder_outlined,
-            selectedIcon: Icons.rule_folder,
-            builder: (_) => const ConsumableApprovalsPage()),
-        if (s.can(role, 'laporan'))
-          NavItem(
-              id: 'laporan',
-              label: 'Laporan',
-              group: 'Analitik',
-              icon: Icons.assessment_outlined,
-              selectedIcon: Icons.assessment,
-              builder: (_) => const ReportsPage()),
-        if (s.can(role, 'forecasting'))
-          NavItem(
-              id: 'forecasting',
-              label: 'Forecasting',
-              group: 'Analitik',
-              icon: Icons.trending_up,
-              builder: (_) => const ForecastingPage()),
-        if (s.can(role, 'chatbot'))
-          NavItem(
-              id: 'chatbot',
-              label: 'AI Chatbot',
-              short: 'Chatbot',
-              group: 'Analitik',
-              icon: Icons.smart_toy_outlined,
-              selectedIcon: Icons.smart_toy,
-              builder: (_) => const ChatPage()),
-        NavItem(
-            id: 'profil',
-            label: 'Profil dan Pengaturan',
-            short: 'Profil',
-            group: 'Akun',
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-            builder: (_) => const ProfilePage()),
+          id: 'notifikasi',
+          label: 'Notifikasi Sapras',
+          group: 'Akun',
+          icon: Icons.notifications_outlined,
+          selectedIcon: Icons.notifications,
+          builder: (_) => const sp_notif.SaprasNotificationPage(),
+        ),
       ];
+
     case UserRole.admin:
       return [
         NavItem(
-            id: 'dashboard',
-            label: 'Dashboard',
-            group: 'Utama',
-            icon: Icons.dashboard_outlined,
-            selectedIcon: Icons.dashboard,
-            builder: (_) => const AdminDashboardPage()),
+          id: 'dashboard',
+          label: 'Dashboard Admin',
+          group: 'Utama',
+          icon: Icons.dashboard_outlined,
+          selectedIcon: Icons.dashboard,
+          builder: (_) => const adm_dash.AdminDashboardPage(),
+        ),
         NavItem(
-            id: 'pengguna',
-            label: 'Manajemen Pengguna',
-            short: 'Pengguna',
-            group: 'Pengguna',
-            icon: Icons.people_outline,
-            selectedIcon: Icons.people,
-            builder: (_) => const UserManagementPage()),
+          id: 'users',
+          label: 'Kelola User',
+          group: 'Master Data',
+          icon: Icons.people_outline,
+          selectedIcon: Icons.people,
+          builder: (_) => const adm_users.AdminUserListPage(),
+        ),
         NavItem(
-            id: 'role',
-            label: 'Role dan Hak Akses',
-            short: 'Role',
-            group: 'Pengguna',
-            icon: Icons.admin_panel_settings_outlined,
-            selectedIcon: Icons.admin_panel_settings,
-            builder: (_) => const RoleManagementPage()),
+          id: 'roles',
+          label: 'Role Pengguna',
+          group: 'Master Data',
+          icon: Icons.shield_outlined,
+          selectedIcon: Icons.shield,
+          builder: (_) => const adm_roles.AdminRolePage(),
+        ),
         NavItem(
-            id: 'kategori',
-            label: 'Manajemen Kategori',
-            short: 'Kategori',
-            group: 'Sistem',
-            icon: Icons.category_outlined,
-            selectedIcon: Icons.category,
-            builder: (_) => const CategoryManagementPage()),
+          id: 'kategori',
+          label: 'Kategori Barang',
+          group: 'Master Data',
+          icon: Icons.category_outlined,
+          selectedIcon: Icons.category,
+          builder: (_) => const adm_cat.AdminCategoryPage(),
+        ),
         NavItem(
-            id: 'audit',
-            label: 'Audit Log',
-            group: 'Sistem',
-            icon: Icons.history_edu_outlined,
-            selectedIcon: Icons.history_edu,
-            builder: (_) => const AuditLogPage()),
+          id: 'model',
+          label: 'Model / Jenis Barang',
+          group: 'Master Data',
+          icon: Icons.devices_other,
+          selectedIcon: Icons.devices_other,
+          builder: (_) => const adm_types.AdminItemTypePage(),
+        ),
         NavItem(
-            id: 'pengaturan',
-            label: 'Pengaturan Sistem',
-            short: 'Pengaturan',
-            group: 'Sistem',
-            icon: Icons.settings_outlined,
-            selectedIcon: Icons.settings,
-            builder: (_) => const SystemSettingsPage()),
+          id: 'lokasi',
+          label: 'Lokasi & Ruangan',
+          group: 'Master Data',
+          icon: Icons.place_outlined,
+          selectedIcon: Icons.place,
+          builder: (_) => const adm_loc.AdminLocationPage(),
+        ),
         NavItem(
-            id: 'profil',
-            label: 'Profil Admin',
-            short: 'Profil',
-            group: 'Akun',
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-            builder: (_) => const ProfilePage()),
+          id: 'audit',
+          label: 'Audit Log Sistem',
+          group: 'Sistem',
+          icon: Icons.history,
+          selectedIcon: Icons.history,
+          builder: (_) => const adm_audit.AdminAuditLogPage(),
+        ),
       ];
   }
 }

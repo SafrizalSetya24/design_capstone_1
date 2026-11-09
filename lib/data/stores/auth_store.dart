@@ -10,12 +10,66 @@ class AuthStore extends ChangeNotifier {
   AppUser? currentUser;
   int _seq = 100;
 
-  Account? _byEmail(String e) {
+  List<AppUser> get users => accounts.map((a) => a.user).toList();
+
+  void demoLogin(String userId) {
+    final a = accountOf(userId);
+    if (a != null) {
+      currentUser = a.user;
+      notifyListeners();
+    }
+  }
+
+  void registerFace() => setFaceRegistered(true);
+
+  void registerSiswa({
+    required String nis,
+    required String name,
+    required String kelas,
+    required String email,
+    required String password,
+  }) {
+    register(
+      role: UserRole.siswa,
+      name: name,
+      email: email,
+      identity: nis,
+      extra: kelas,
+      password: password,
+    );
+    verifyEmail(email);
+  }
+
+  void registerGuru({
+    required String nik,
+    required String name,
+    required String jabatan,
+    required String email,
+    required String password,
+  }) {
+    register(
+      role: UserRole.guru,
+      name: name,
+      email: email,
+      identity: nik,
+      extra: jabatan,
+      password: password,
+    );
+    verifyEmail(email);
+  }
+
+  Account? findAccount(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return null;
     for (final a in accounts) {
-      if (a.user.email.toLowerCase() == e.trim().toLowerCase()) return a;
+      if (a.user.email.toLowerCase() == q) return a;
+      if (a.user.identityValue.toLowerCase() == q) return a;
+      if (a.user.id.toLowerCase() == q) return a;
     }
     return null;
   }
+
+  Account? _byEmail(String e) => findAccount(e);
 
   Account? accountOf(String id) {
     for (final a in accounts) {
@@ -31,10 +85,10 @@ class AuthStore extends ChangeNotifier {
     if (u != null) _audit.log(u.name, u.role.label, type, detail);
   }
 
-  String? login(String email, String pass) {
-    final a = _byEmail(email);
+  String? login(String identifier, String pass) {
+    final a = findAccount(identifier);
     if (a == null || a.password != pass) {
-      return 'Email atau kata sandi tidak sesuai. Periksa kembali lalu coba lagi.';
+      return 'Nomor Identitas (NIS/NIK), Email, atau password tidak sesuai. Periksa kembali lalu coba lagi.';
     }
     if (!a.active) {
       return 'Akun Anda dinonaktifkan. Hubungi Admin sekolah untuk mengaktifkannya kembali.';

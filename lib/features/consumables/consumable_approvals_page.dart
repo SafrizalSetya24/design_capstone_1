@@ -42,7 +42,7 @@ class ConsumableApprovalsPage extends StatelessWidget {
                         style: const TextStyle(
                             fontSize: 12.5, color: AppColors.textSecondary))
                   ],
-                  trailing: StatusBadge.fromStatus(r.status.label),
+                  trailing: StatusBadge.status(r.status),
                   onTap: () => push(
                       context, ConsumableApprovalDetailPage(requestId: r.id)),
                 ),
@@ -247,7 +247,7 @@ class _ConsumableApprovalDetailPageState
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: AppColors.navy))),
-          StatusBadge.fromStatus(r.status.label)
+          StatusBadge.status(r.status)
         ])),
         const SizedBox(height: AppSpacing.md),
         TwoPane(left: left, right: right),

@@ -2,39 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:sipintar/core/theme/app_colors.dart';
 
 enum NotifType {
-  pengajuan,
-  persetujuan,
-  penolakan,
-  kedaluwarsa,
-  pengingat,
-  habisPakai
-}
+  pengajuan('Pengajuan berhasil', Icons.send_rounded, AppColors.blue),
+  persetujuan('Persetujuan', Icons.check_circle_outline, AppColors.success),
+  penolakan('Penolakan', Icons.cancel_outlined, AppColors.danger),
+  kedaluwarsa('Booking kedaluwarsa', Icons.timer_off_outlined, AppColors.danger),
+  pengingat('Pengingat pengembalian', Icons.alarm, AppColors.warning),
+  habisPakai('Barang habis pakai', Icons.inventory_outlined, AppColors.blue);
 
-extension NotifTypeX on NotifType {
-  String get label => switch (this) {
-        NotifType.pengajuan => 'Pengajuan berhasil',
-        NotifType.persetujuan => 'Persetujuan',
-        NotifType.penolakan => 'Penolakan',
-        NotifType.kedaluwarsa => 'Booking kedaluwarsa',
-        NotifType.pengingat => 'Pengingat pengembalian',
-        NotifType.habisPakai => 'Barang habis pakai',
-      };
-  IconData get icon => switch (this) {
-        NotifType.pengajuan => Icons.send_rounded,
-        NotifType.persetujuan => Icons.check_circle_outline,
-        NotifType.penolakan => Icons.cancel_outlined,
-        NotifType.kedaluwarsa => Icons.timer_off_outlined,
-        NotifType.pengingat => Icons.alarm,
-        NotifType.habisPakai => Icons.inventory_outlined,
-      };
-  Color get color => switch (this) {
-        NotifType.pengajuan => AppColors.blue,
-        NotifType.persetujuan => AppColors.success,
-        NotifType.penolakan => AppColors.danger,
-        NotifType.kedaluwarsa => AppColors.danger,
-        NotifType.pengingat => AppColors.warning,
-        NotifType.habisPakai => AppColors.blue,
-      };
+  final String label;
+  final IconData icon;
+  final Color color;
+  const NotifType(this.label, this.icon, this.color);
 }
 
 class AppNotification {
@@ -86,4 +64,5 @@ class AuditEntry {
     required this.detail,
     required this.time,
   });
+  String get actor => userName;
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/stores/auth_store.dart';
 import '../../shared/widgets/sipintar_logo.dart';
 import 'package:sipintar/app/routes.dart';
 
@@ -16,9 +18,16 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(milliseconds: 2200), () {
+    _timer = Timer(const Duration(milliseconds: 1200), () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+      final auth = context.read<AuthStore>();
+      if (auth.currentUser != null) {
+        Navigator.of(context, rootNavigator: true)
+            .pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
+      } else {
+        Navigator.of(context, rootNavigator: true)
+            .pushNamedAndRemoveUntil(AppRoutes.onboarding, (_) => false);
+      }
     });
   }
 

@@ -8,7 +8,7 @@ class CountdownBadge extends StatefulWidget {
   final VoidCallback? onExpired;
   final bool big;
   const CountdownBadge(
-      {super.key, required this.deadline, this.onExpired, this.big = false});
+      {super.key, required this.deadline, this.onExpired, VoidCallback? onExpire, this.big = false});
   @override
   State<CountdownBadge> createState() => _CountdownBadgeState();
 }
@@ -48,20 +48,16 @@ class _CountdownBadgeState extends State<CountdownBadge> {
           horizontal: widget.big ? 16 : 10, vertical: widget.big ? 12 : 4),
       decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(widget.big ? 14 : 20)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.timer_outlined, size: widget.big ? 24 : 14, color: color),
-          const SizedBox(width: 6),
-          Text(Fmt.countdown(rem),
-              style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w800,
-                  fontSize: widget.big ? 22 : 12,
-                  fontFeatures: const [FontFeature.tabularFigures()])),
-        ],
-      ),
+          borderRadius: BorderRadius.circular(20)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(Icons.schedule, size: widget.big ? 18 : 14, color: color),
+        const SizedBox(width: 6),
+        Text(rem.isNegative ? 'Kedaluwarsa' : Fmt.countdown(rem),
+            style: TextStyle(
+                color: color,
+                fontSize: widget.big ? 14 : 12,
+                fontWeight: FontWeight.w700)),
+      ]),
     );
   }
 }

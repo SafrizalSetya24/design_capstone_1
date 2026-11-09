@@ -15,6 +15,7 @@ void main() {
   final consumables = ConsumableStore(auth, audit, notif);
   final loans = LoanStore(auth, audit, notif, inventory, settings);
   final chat = ChatStore(auth, inventory, consumables, loans);
+  final cart = CartStore();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: settings),
@@ -25,6 +26,7 @@ void main() {
       ChangeNotifierProvider.value(value: consumables),
       ChangeNotifierProvider.value(value: loans),
       ChangeNotifierProvider.value(value: chat),
+      ChangeNotifierProvider.value(value: cart),
     ],
     child: const SipintarApp(),
   ));
@@ -46,14 +48,22 @@ class SipintarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SIPINTAR',
+      title: 'InventarisMuhamka | Sistem Inventaris dan Peminjaman Sekolah',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
       scrollBehavior: _AppScroll(),
+      theme: AppTheme.light,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
       locale: const Locale('id', 'ID'),
-      supportedLocales: const [Locale('id', 'ID')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      initialRoute: AppRoutes.splash,
+      onGenerateInitialRoutes: (initialRoute) {
+        return [
+          AppRoutes.generate(RouteSettings(name: initialRoute)),
+        ];
+      },
       onGenerateRoute: AppRoutes.generate,
     );
   }

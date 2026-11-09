@@ -130,7 +130,7 @@ class _HistoryPageState extends State<HistoryPage> {
           leading: ItemImage(iconKey: l.lines.first.iconKey, size: 46),
           title: '${l.id} - ${l.summary}',
           subtitle: Fmt.range(l.start, l.end),
-          trailing: StatusBadge.fromStatus(l.status.label),
+          trailing: StatusBadge.status(l.status),
           onTap: () => push(context, LoanDetailPage(loanId: l.id)),
         );
 
@@ -151,7 +151,7 @@ class _HistoryPageState extends State<HistoryPage> {
               leading: ItemImage(iconKey: r.lines.first.iconKey, size: 46),
               title: '${r.id} - ${r.summary}',
               subtitle: Fmt.dateTime(r.createdAt),
-              trailing: StatusBadge.fromStatus(r.status.label),
+              trailing: StatusBadge.status(r.status),
               onTap: () =>
                   push(context, ConsumableRequestDetailPage(requestId: r.id)),
             ))

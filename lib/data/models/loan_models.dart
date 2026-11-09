@@ -1,30 +1,27 @@
 import 'package:sipintar/data/models/inventory_models.dart';
 import 'package:sipintar/data/models/user_model.dart';
 
-enum LoanStatus {
-  menungguVerifikasiWajah,
-  verifikasiBerhasil,
-  menungguPersetujuan,
-  disetujui,
-  ditolak,
-  kedaluwarsa,
-  sedangDipinjam,
-  menungguPengembalian,
-  selesai,
+enum ItemKind {
+  perUnit('Barang Per Unit'),
+  habisPakai('Barang Habis Pakai');
+
+  final String label;
+  const ItemKind(this.label);
 }
 
-extension LoanStatusX on LoanStatus {
-  String get label => switch (this) {
-        LoanStatus.menungguVerifikasiWajah => 'Menunggu verifikasi wajah',
-        LoanStatus.verifikasiBerhasil => 'Verifikasi berhasil',
-        LoanStatus.menungguPersetujuan => 'Menunggu persetujuan Sapras',
-        LoanStatus.disetujui => 'Disetujui',
-        LoanStatus.ditolak => 'Ditolak',
-        LoanStatus.kedaluwarsa => 'Booking kedaluwarsa',
-        LoanStatus.sedangDipinjam => 'Sedang dipinjam',
-        LoanStatus.menungguPengembalian => 'Menunggu pengembalian',
-        LoanStatus.selesai => 'Selesai dikembalikan',
-      };
+enum LoanStatus {
+  menungguVerifikasiWajah('Menunggu verifikasi wajah'),
+  verifikasiBerhasil('Verifikasi berhasil'),
+  menungguPersetujuan('Menunggu persetujuan Sapras'),
+  disetujui('Disetujui'),
+  ditolak('Ditolak'),
+  kedaluwarsa('Booking expired (2 jam)'),
+  sedangDipinjam('Sedang dipinjam'),
+  menungguPengembalian('Menunggu pengembalian'),
+  selesai('Selesai / Dikembalikan');
+
+  final String label;
+  const LoanStatus(this.label);
 
   /// Urutan status yang dilalui hingga status ini (untuk riwayat dummy).
   List<LoanStatus> get path {
@@ -89,12 +86,28 @@ class Borrower {
 
 class LoanLine {
   final String itemId, itemName, iconKey;
+  final ItemKind kind;
+  final String satuan;
   int qty;
-  LoanLine(
-      {required this.itemId,
-      required this.itemName,
-      required this.iconKey,
-      required this.qty});
+  int handedOverQty;
+  List<String> assignedUnits;
+  Map<String, ItemCondition> returnConditions;
+
+  LoanLine({
+    required this.itemId,
+    required this.itemName,
+    required this.iconKey,
+    this.kind = ItemKind.perUnit,
+    this.satuan = 'unit',
+    required this.qty,
+    this.handedOverQty = 0,
+    List<String>? assignedUnits,
+    Map<String, ItemCondition>? returnConditions,
+  })  : assignedUnits = assignedUnits ?? [],
+        returnConditions = returnConditions ?? {};
+
+  bool get isPerUnit => kind == ItemKind.perUnit;
+  bool get isHabisPakai => kind == ItemKind.habisPakai;
 }
 
 class LoanEvent {
@@ -122,6 +135,7 @@ class LoanRequest {
   Map<String, ItemCondition> returnConditions;
   String? damageNote;
   final List<LoanEvent> events;
+
   LoanRequest({
     required this.id,
     required this.borrower,
@@ -144,19 +158,32 @@ class LoanRequest {
   })  : unitCodes = unitCodes ?? [],
         returnConditions = returnConditions ?? {},
         events = events ?? [];
+
   int get totalQty => lines.fold(0, (a, l) => a + l.qty);
-  String get summary => lines.map((l) => '${l.qty} ${l.itemName}').join(', ');
+  String get summary => lines.map((l) => '${l.qty} ${l.satuan} ${l.itemName}').join(', ');
+
+  DateTime get expiresAt => submittedAt.add(const Duration(hours: 2));
+  Duration get remainingTime => expiresAt.difference(DateTime.now());
+  bool get isExpired =>
+      status == LoanStatus.menungguPersetujuan && remainingTime.isNegative;
+
+  List<LoanLine> get perUnitLines =>
+      lines.where((l) => l.kind == ItemKind.perUnit).toList();
+  List<LoanLine> get consumableLines =>
+      lines.where((l) => l.kind == ItemKind.habisPakai).toList();
+  bool get hasPerUnit => perUnitLines.isNotEmpty;
+  bool get hasConsumables => consumableLines.isNotEmpty;
+  bool get isMixed => hasPerUnit && hasConsumables;
 }
 
-enum ConsumableStatus { menunggu, disetujui, ditolak, diserahkan }
+enum ConsumableStatus {
+  menunggu('Menunggu persetujuan'),
+  disetujui('Disetujui, menunggu penyerahan'),
+  ditolak('Ditolak'),
+  diserahkan('Sudah diserahkan');
 
-extension ConsumableStatusX on ConsumableStatus {
-  String get label => switch (this) {
-        ConsumableStatus.menunggu => 'Menunggu persetujuan',
-        ConsumableStatus.disetujui => 'Disetujui, menunggu penyerahan',
-        ConsumableStatus.ditolak => 'Ditolak',
-        ConsumableStatus.diserahkan => 'Sudah diserahkan',
-      };
+  final String label;
+  const ConsumableStatus(this.label);
 }
 
 class ConsumableLine {

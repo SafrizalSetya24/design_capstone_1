@@ -3,7 +3,6 @@ import 'package:sipintar/data/dummy/dummy_data.dart';
 import 'package:sipintar/data/models/inventory_models.dart';
 import 'package:sipintar/data/models/loan_models.dart';
 import 'package:sipintar/data/models/misc_models.dart';
-import 'package:sipintar/data/models/user_model.dart';
 import 'package:sipintar/data/stores/audit_store.dart';
 import 'package:sipintar/data/stores/auth_store.dart';
 import 'package:sipintar/data/stores/notification_store.dart';

@@ -17,5 +17,6 @@ export 'package:sipintar/shared/widgets/sipintar_logo.dart';
 export 'package:sipintar/shared/widgets/stat_card.dart';
 export 'package:sipintar/shared/widgets/state_views.dart';
 export 'package:sipintar/shared/widgets/status_badge.dart';
+export 'package:sipintar/shared/widgets/borrowing_flow_stepper.dart';
 export 'package:sipintar/shared/widgets/responsive_widgets.dart';
 export 'package:sipintar/shared/widgets/shell_scope.dart';

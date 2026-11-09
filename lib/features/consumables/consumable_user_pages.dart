@@ -403,7 +403,7 @@ class ConsumableRequestDetailPage extends StatelessWidget {
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: AppColors.navy))),
-            StatusBadge.fromStatus(r.status.label),
+            StatusBadge.status(r.status),
           ]),
         ),
         const SizedBox(height: AppSpacing.md),

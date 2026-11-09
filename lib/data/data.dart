@@ -11,3 +11,4 @@ export 'package:sipintar/data/stores/inventory_store.dart';
 export 'package:sipintar/data/stores/consumable_store.dart';
 export 'package:sipintar/data/stores/loan_store.dart';
 export 'package:sipintar/data/stores/chat_store.dart';
+export 'package:sipintar/data/stores/cart_store.dart';

@@ -242,7 +242,7 @@ class _LoginFaceVerificationPageState extends State<LoginFaceVerificationPage> {
           TextButton.icon(
             onPressed: () {
               auth.logout();
-              Navigator.of(context)
+              Navigator.of(context, rootNavigator: true)
                   .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
             },
             icon: const Icon(Icons.logout, size: 16),

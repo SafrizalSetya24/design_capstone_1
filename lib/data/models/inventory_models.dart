@@ -1,22 +1,20 @@
-enum ItemCondition { layak, perluDiperbaiki, rusakTotal }
+enum ItemCondition {
+  layak('Layak pakai'),
+  perluDiperbaiki('Perlu diperbaiki'),
+  rusakTotal('Rusak total');
 
-extension ItemConditionX on ItemCondition {
-  String get label => switch (this) {
-        ItemCondition.layak => 'Layak pakai',
-        ItemCondition.perluDiperbaiki => 'Perlu diperbaiki',
-        ItemCondition.rusakTotal => 'Rusak total',
-      };
+  final String label;
+  const ItemCondition(this.label);
 }
 
-enum UnitStatus { tersedia, dipinjam, perbaikan, nonaktif }
+enum UnitStatus {
+  tersedia('Tersedia'),
+  dipinjam('Sedang dipinjam'),
+  perbaikan('Dalam perbaikan'),
+  nonaktif('Tidak aktif');
 
-extension UnitStatusX on UnitStatus {
-  String get label => switch (this) {
-        UnitStatus.tersedia => 'Tersedia',
-        UnitStatus.dipinjam => 'Sedang dipinjam',
-        UnitStatus.perbaikan => 'Dalam perbaikan',
-        UnitStatus.nonaktif => 'Tidak aktif',
-      };
+  final String label;
+  const UnitStatus(this.label);
 }
 
 class AssetUnit {
@@ -100,15 +98,14 @@ class StockMovement {
   });
 }
 
-enum RepairStatus { menunggu, diperbaiki, selesai, tidakDapatDiperbaiki }
+enum RepairStatus {
+  menunggu('Menunggu perbaikan'),
+  diperbaiki('Sedang diperbaiki'),
+  selesai('Selesai diperbaiki'),
+  tidakDapatDiperbaiki('Tidak dapat diperbaiki');
 
-extension RepairStatusX on RepairStatus {
-  String get label => switch (this) {
-        RepairStatus.menunggu => 'Menunggu perbaikan',
-        RepairStatus.diperbaiki => 'Sedang diperbaiki',
-        RepairStatus.selesai => 'Selesai diperbaiki',
-        RepairStatus.tidakDapatDiperbaiki => 'Tidak dapat diperbaiki',
-      };
+  final String label;
+  const RepairStatus(this.label);
 }
 
 class RepairRecord {
@@ -152,10 +149,12 @@ class ConditionLog {
   });
 }
 
-enum CategoryType { perUnit, habisPakai }
+enum CategoryType {
+  perUnit('Per unit'),
+  habisPakai('Habis pakai');
 
-extension CategoryTypeX on CategoryType {
-  String get label => this == CategoryType.perUnit ? 'Per unit' : 'Habis pakai';
+  final String label;
+  const CategoryType(this.label);
 }
 
 class Category {

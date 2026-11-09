@@ -4,6 +4,8 @@ class AppColors {
   AppColors._();
   static const navy = Color(0xFF0B2A5B);
   static const blue = Color(0xFF1F6FEB);
+  static const primary = navy;
+  static const primaryLight = blue;
   static const background = Color(0xFFF3F6FB);
   static const surface = Colors.white;
   static const border = Color(0xFFE2E8F0);

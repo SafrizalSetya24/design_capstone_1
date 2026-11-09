@@ -327,7 +327,7 @@ class LoanTimeline extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 4),
                   decoration: BoxDecoration(
                       color: StatusBadge.colorOf(
-                          StatusBadge.toneOf(events[i].status.label)),
+                          StatusBadge.toneOf(StatusBadge.extractLabel(events[i].status))),
                       shape: BoxShape.circle),
                 ),
                 if (i != events.length - 1)
@@ -340,7 +340,7 @@ class LoanTimeline extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(events[i].status.label,
+                      Text(StatusBadge.extractLabel(events[i].status),
                           style: const TextStyle(fontWeight: FontWeight.w700)),
                       Text(_t(events[i].time),
                           style: const TextStyle(

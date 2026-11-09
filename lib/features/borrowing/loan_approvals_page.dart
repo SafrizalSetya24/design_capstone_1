@@ -38,7 +38,7 @@ class _LoanApprovalsPageState extends State<LoanApprovalsPage> {
         trailing: pending
             ? CountdownBadge(
                 deadline: store.deadlineOf(l), onExpired: store.checkExpiry)
-            : StatusBadge.fromStatus(l.status.label),
+            : StatusBadge.status(l.status),
         onTap: () => push(context, LoanApprovalDetailPage(loanId: l.id)),
       );
 
@@ -315,7 +315,7 @@ class LoanApprovalDetailPage extends StatelessWidget {
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: AppColors.navy))),
-          StatusBadge.fromStatus(l.status.label)
+          StatusBadge.status(l.status)
         ])),
         const SizedBox(height: AppSpacing.md),
         TwoPane(left: left, right: right),

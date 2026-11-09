@@ -84,3 +84,15 @@ class ItemImage extends StatelessWidget {
     );
   }
 }
+
+class ItemIcon extends StatelessWidget {
+  final String name;
+  final double size;
+  final Color? color;
+  const ItemIcon({super.key, required this.name, this.size = 24, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(ItemIcons.icon(name), size: size, color: color ?? ItemIcons.color(name));
+  }
+}

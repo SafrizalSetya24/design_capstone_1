@@ -40,4 +40,6 @@ class NotificationStore extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void markAll(String userId) => markAllRead(userId);
 }

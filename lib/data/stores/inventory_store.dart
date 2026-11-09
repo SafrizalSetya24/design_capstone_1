@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:sipintar/data/dummy/dummy_data.dart';
 import 'package:sipintar/data/models/inventory_models.dart';
-import 'package:sipintar/data/models/user_model.dart';
 import 'package:sipintar/data/stores/audit_store.dart';
 import 'package:sipintar/data/stores/auth_store.dart';
 
@@ -19,6 +18,17 @@ class InventoryStore extends ChangeNotifier {
   final List<Category> categories = DummyData.categories();
   final List<UnitItem> items = DummyData.unitItems();
   final List<RepairRecord> repairs = DummyData.repairs();
+  List<RepairRecord> get repairRecords => repairs;
+
+  final List<({String name, String building, int floor})> locations = [
+    (name: 'Lab Komputer 1', building: 'Gedung Utama', floor: 2),
+    (name: 'Lab Komputer 2', building: 'Gedung Utama', floor: 2),
+    (name: 'Lab RPL', building: 'Gedung Kejuruan', floor: 1),
+    (name: 'Ruang Guru', building: 'Gedung Kantor', floor: 1),
+    (name: 'Gudang Sapras Utama', building: 'Gedung Logistik', floor: 1),
+    (name: 'Ruang Multimedia', building: 'Gedung Kejuruan', floor: 2),
+  ];
+
   final List<ConditionLog> logs = DummyData.conditionLogs();
   int _n = 100;
 
@@ -113,6 +123,17 @@ class InventoryStore extends ChangeNotifier {
       item.units.add(_newUnit(p, c));
     }
     _log('Inventaris', 'Menambah $count unit ${item.name}');
+    notifyListeners();
+  }
+
+  void addUnit(UnitItem item, String code,
+      {ItemCondition condition = ItemCondition.layak}) {
+    item.units.add(AssetUnit(
+      code: code.trim().toUpperCase(),
+      condition: condition,
+      status: UnitStatus.tersedia,
+    ));
+    _log('Inventaris', 'Menambah unit ${code.toUpperCase()} pada ${item.name}');
     notifyListeners();
   }
 

@@ -3,12 +3,12 @@ import 'package:sipintar/app/adaptive_shell.dart';
 import 'package:sipintar/data/models/user_model.dart';
 import 'package:sipintar/features/auth/account_type_page.dart';
 import 'package:sipintar/features/auth/forgot_password_page.dart';
-import 'package:sipintar/features/auth/login_page.dart';
 import 'package:sipintar/features/auth/onboarding_page.dart';
 import 'package:sipintar/features/auth/register_page.dart';
 import 'package:sipintar/features/auth/splash_page.dart';
-import 'package:sipintar/features/face_verification/face_registration_page.dart';
 import 'package:sipintar/features/face_verification/login_face_verification_page.dart';
+import 'package:sipintar/pages/auth/login_page.dart';
+import 'package:sipintar/pages/face/face_registration_page.dart';
 
 class AppRoutes {
   AppRoutes._();

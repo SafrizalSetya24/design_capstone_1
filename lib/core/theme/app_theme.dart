@@ -59,7 +59,7 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.navy,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(0, 48),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -68,7 +68,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.navy,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(0, 48),
           side: const BorderSide(color: AppColors.border),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -87,6 +87,13 @@ class AppTheme {
                   ? AppColors.navy
                   : AppColors.textSecondary,
             )),
+      ),
+      tabBarTheme: const TabBarThemeData(
+        indicatorColor: AppColors.primary,
+        labelColor: AppColors.navy,
+        unselectedLabelColor: AppColors.textSecondary,
+        labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
       ),
     );
   }

@@ -16,25 +16,30 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: loading ? null : onPressed,
-      child: loading
-          ? const SizedBox(
-              height: 22,
-              width: 22,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2.4, color: Colors.white),
-            )
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, size: 20),
-                  const SizedBox(width: 8)
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: FilledButton(
+        onPressed: loading ? null : onPressed,
+        child: loading
+            ? const SizedBox(
+                height: 22,
+                width: 22,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2.4, color: Colors.white),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 20),
+                    const SizedBox(width: 8)
+                  ],
+                  Text(label),
                 ],
-                Text(label),
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

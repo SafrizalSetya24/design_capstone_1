@@ -281,7 +281,7 @@ class _FaceRegistrationPageState extends State<FaceRegistrationPage> {
         child: TextButton.icon(
           onPressed: () {
             auth.logout();
-            Navigator.of(context)
+            Navigator.of(context, rootNavigator: true)
                 .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
           },
           icon: const Icon(Icons.arrow_back, size: 16),

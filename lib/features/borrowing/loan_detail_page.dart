@@ -71,7 +71,7 @@ class LoanDetailPage extends StatelessWidget {
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: AppColors.navy))),
-          StatusBadge.fromStatus(l.status.label),
+          StatusBadge.status(l.status),
         ]),
         if (l.status == LoanStatus.menungguPersetujuan) ...[
           const SizedBox(height: 14),

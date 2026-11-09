@@ -91,8 +91,8 @@ class UnitItemDetailPage extends StatelessWidget {
                 for (final u in it.units)
                   [
                     cellText(u.code, bold: true),
-                    StatusBadge.fromStatus(u.condition.label),
-                    StatusBadge.fromStatus(u.status.label)
+                    StatusBadge.status(u.condition),
+                    StatusBadge.status(u.status)
                   ],
               ],
             ),

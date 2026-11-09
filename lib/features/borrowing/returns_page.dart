@@ -32,7 +32,7 @@ class ReturnsPage extends StatelessWidget {
                   color: late ? AppColors.danger : AppColors.textSecondary,
                   fontWeight: late ? FontWeight.w700 : FontWeight.w500)),
         ],
-        trailing: StatusBadge.fromStatus(l.status.label),
+        trailing: StatusBadge.status(l.status),
         onTap: () => push(context, ReturnDetailPage(loanId: l.id)),
       );
     }

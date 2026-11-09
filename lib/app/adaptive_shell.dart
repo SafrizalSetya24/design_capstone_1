@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sipintar/app/navigation.dart';
+import 'package:sipintar/app/routes.dart';
 import 'package:sipintar/core/core.dart';
 import 'package:sipintar/data/data.dart';
 import 'package:sipintar/features/auth/auth_actions.dart';
+import 'package:sipintar/pages/auth/login_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
 class AdaptiveShell extends StatefulWidget {
@@ -19,6 +21,7 @@ class _AdaptiveShellState extends State<AdaptiveShell> {
   String? _id;
 
   void _go(List<NavItem> items, String id, {int arg = 0}) {
+    if (_id == id) return;
     final it = items.firstWhere((i) => i.id == id, orElse: () => items.first);
     setState(() => _id = it.id);
     _navKey.currentState?.pushAndRemoveUntil(
@@ -31,7 +34,15 @@ class _AdaptiveShellState extends State<AdaptiveShell> {
     final settings = context.watch<SettingsStore>();
     final unread =
         user == null ? 0 : context.watch<NotificationStore>().unread(user.id);
-    if (user == null) return const Scaffold();
+    if (user == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true)
+              .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
+        }
+      });
+      return const LoginPage();
+    }
 
     final items = navItemsFor(user, settings);
     final id = items.any((i) => i.id == _id) ? _id! : items.first.id;
@@ -262,9 +273,9 @@ class _SidebarPanel extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('SIPINTAR',
+                      Text('inventarisMuhamka',
                           style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: AppColors.navy)),
                       Text('Inventaris Sekolah',
