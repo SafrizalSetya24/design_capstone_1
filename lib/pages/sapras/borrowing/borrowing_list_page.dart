@@ -55,34 +55,39 @@ class _SaprasBorrowingListPageState extends State<SaprasBorrowingListPage> with 
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Cari kode request, peminjam, atau barang...',
-                prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                suffixIcon: _search.isNotEmpty
-                    ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _search = ''))
-                    : null,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1050),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Cari kode request, peminjam, atau barang...',
+                    prefixIcon: const Icon(Icons.search),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    suffixIcon: _search.isNotEmpty
+                        ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _search = ''))
+                        : null,
+                  ),
+                  onChanged: (v) => setState(() => _search = v.trim().toLowerCase()),
+                ),
               ),
-              onChanged: (v) => setState(() => _search = v.trim().toLowerCase()),
-            ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildList(context, waiting, 'Tidak ada pengajuan yang menunggu persetujuan.'),
+                    _buildList(context, approved, 'Tidak ada pengajuan yang menunggu penyerahan unit.'),
+                    _buildList(context, borrowed, 'Tidak ada barang yang sedang dipinjam.'),
+                    _buildList(context, history, 'Belum ada arsip riwayat peminjaman.'),
+                  ],
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildList(context, waiting, 'Tidak ada pengajuan yang menunggu persetujuan.'),
-                _buildList(context, approved, 'Tidak ada pengajuan yang menunggu penyerahan unit.'),
-                _buildList(context, borrowed, 'Tidak ada barang yang sedang dipinjam.'),
-                _buildList(context, history, 'Belum ada arsip riwayat peminjaman.'),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

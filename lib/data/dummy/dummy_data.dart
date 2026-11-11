@@ -11,9 +11,9 @@ class DummyData {
   static const List<AppUser> users = [
     Siswa(
         id: 'sw1',
-        name: 'Rizky Pratama',
-        email: 'siswa@sipintar.id',
-        nis: '2024001234',
+        name: 'Safrizal Setya Wira Budiman',
+        email: 'safrizal@sipintar.id',
+        nis: '22090044',
         kelas: 'XI RPL 1'),
     Siswa(
         id: 'sw2',
@@ -35,9 +35,9 @@ class DummyData {
         kelas: 'XI AKL 1'),
     Guru(
         id: 'gr1',
-        name: 'Siti Nurhaliza, S.Pd.',
-        email: 'guru@sipintar.id',
-        nik: '3374012345670001',
+        name: 'Ade Anang Kurniawan',
+        email: 'ade@sipintar.id',
+        nik: '24090106',
         mataPelajaran: 'Informatika'),
     Guru(
         id: 'gr2',
@@ -53,9 +53,9 @@ class DummyData {
         mataPelajaran: 'Bahasa Indonesia'),
     SaprasUser(
         id: 'sp1',
-        name: 'Budi Santoso',
-        email: 'sapras@sipintar.id',
-        idPegawai: 'SPR-007'),
+        name: 'M. Fajar Ramadhan',
+        email: 'fajar@sipintar.id',
+        idPegawai: '24090133'),
     SaprasUser(
         id: 'sp2',
         name: 'Lina Marlina',
@@ -63,9 +63,9 @@ class DummyData {
         idPegawai: 'SPR-008'),
     AdminUser(
         id: 'ad1',
-        name: 'Dewi Lestari',
-        email: 'admin@sipintar.id',
-        idPegawai: 'ADM-001'),
+        name: 'Irfan Maulana Saputra',
+        email: 'irfan@sipintar.id',
+        idPegawai: '24090107'),
   ];
 
   static AppUser user(String id) => users.firstWhere((u) => u.id == id);
@@ -273,11 +273,11 @@ class DummyData {
             qty: q,
             date: n.subtract(Duration(days: days)),
             note: note,
-            actor: 'Budi Santoso');
+            actor: 'M. Fajar Ramadhan');
     return [
       m('m1', 'cs1', 'Kertas HVS A4 80 gr', true, 30, 14, 'Pembelian bulanan'),
       m('m2', 'cs1', 'Kertas HVS A4 80 gr', false, 2, 6,
-          'Permintaan Rizky Pratama'),
+          'Permintaan Safrizal Setya Wira Budiman'),
       m('m3', 'cs2', 'Pulpen Standard Hitam', true, 100, 20,
           'Pengadaan semester'),
       m('m4', 'cs3', 'Spidol Whiteboard Hitam', false, 6, 9, 'Permintaan guru'),
@@ -351,7 +351,7 @@ class DummyData {
             to: b,
             note: note,
             date: n.subtract(Duration(days: d)),
-            actor: 'Budi Santoso');
+            actor: 'M. Fajar Ramadhan');
     return [
       l('KMR-2026-002', 'Kamera Canon EOS 200D', ItemCondition.layak,
           ItemCondition.perluDiperbaiki, 'Lensa berjamur', 45),
@@ -432,7 +432,7 @@ class DummyData {
           LoanStatus.sedangDipinjam,
           n.subtract(const Duration(days: 1, hours: 3)),
           codes: ['LPT-2026-001', 'PRY-2026-001'],
-          receiver: 'Rizky Pratama'),
+          receiver: 'Safrizal Setya Wira Budiman'),
       _loan(
           'PJM-0024',
           'sw1',
@@ -453,7 +453,7 @@ class DummyData {
           n.subtract(const Duration(days: 6)),
           codes: ['SPK-2026-001'],
           returned: t(-5, 12, 10),
-          receiver: 'Rizky Pratama'),
+          receiver: 'Safrizal Setya Wira Budiman'),
       _loan(
           'PJM-0023',
           'gr1',
@@ -676,23 +676,23 @@ class DummyData {
     return [
       e(
           1,
-          'Rizky Pratama',
+          'Safrizal Setya Wira Budiman',
           'Siswa',
           'Pengajuan',
           'Mengajukan peminjaman PJM-0024',
           const Duration(hours: 2, minutes: 20)),
       e(
           2,
-          'Budi Santoso',
+          'M. Fajar Ramadhan',
           'Sapras',
           'Persetujuan',
           'Menyetujui peminjaman PJM-0023',
           const Duration(hours: 4, minutes: 50)),
-      e(3, 'Siti Nurhaliza, S.Pd.', 'Guru', 'Pengajuan',
+      e(3, 'Ade Anang Kurniawan', 'Guru', 'Pengajuan',
           'Mengajukan peminjaman PJM-0025', const Duration(minutes: 10)),
-      e(4, 'Budi Santoso', 'Sapras', 'Inventaris',
+      e(4, 'M. Fajar Ramadhan', 'Sapras', 'Inventaris',
           'Mencatat kerusakan unit SPK-2026-003', const Duration(days: 2)),
-      e(5, 'Dewi Lestari', 'Admin', 'Pengguna',
+      e(5, 'Irfan Maulana Saputra', 'Admin', 'Pengguna',
           'Menonaktifkan akun Dimas Saputra', const Duration(days: 3)),
       e(
           6,
@@ -703,20 +703,20 @@ class DummyData {
           const Duration(hours: 11, minutes: 58)),
       e(
           7,
-          'Budi Santoso',
+          'M. Fajar Ramadhan',
           'Sapras',
           'Stok',
           'Barang masuk: Kertas HVS A4 80 gr (+30 rim)',
           const Duration(days: 14)),
       e(8, 'Nabila Putri', 'Siswa', 'Login', 'Masuk ke aplikasi',
           const Duration(days: 2, hours: 3)),
-      e(9, 'Dewi Lestari', 'Admin', 'Pengaturan',
+      e(9, 'Irfan Maulana Saputra', 'Admin', 'Pengaturan',
           'Mengubah batas booking menjadi 12 jam', const Duration(days: 20)),
-      e(10, 'Budi Santoso', 'Sapras', 'Penolakan',
+      e(10, 'M. Fajar Ramadhan', 'Sapras', 'Penolakan',
           'Menolak peminjaman PJM-0018', const Duration(days: 2)),
       e(11, 'Ahmad Fauzi, S.Kom.', 'Guru', 'Login', 'Masuk ke aplikasi',
           const Duration(days: 3, hours: 6)),
-      e(12, 'Dewi Lestari', 'Admin', 'Kategori', 'Menambah kategori Kebersihan',
+      e(12, 'Irfan Maulana Saputra', 'Admin', 'Kategori', 'Menambah kategori Kebersihan',
           const Duration(days: 30)),
     ];
   }

@@ -48,7 +48,10 @@ class _SaprasInventoryListPageState extends State<SaprasInventoryListPage> {
         ],
       ),
       body: SafeArea(
-        child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1050),
+            child: Column(
           children: [
             // Search & Filter
             Padding(
@@ -83,7 +86,7 @@ class _SaprasInventoryListPageState extends State<SaprasInventoryListPage> {
               ),
             ),
 
-            // Tabel Detail Inventaris (Sesuai Bagian 30 Dokumen)
+            // Tabel unit inventaris barang
             Expanded(
               child: allUnits.isEmpty
                   ? const Center(child: Text('Tidak ada unit barang yang cocok.'))
@@ -185,6 +188,8 @@ class _SaprasInventoryListPageState extends State<SaprasInventoryListPage> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 }

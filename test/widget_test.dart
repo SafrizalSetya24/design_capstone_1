@@ -11,6 +11,10 @@ import 'package:sipintar/pages/catalog/item_category_page.dart';
 import 'package:sipintar/pages/catalog/item_detail_page.dart';
 import 'package:sipintar/pages/history/borrowing_history_page.dart';
 import 'package:sipintar/pages/home/home_page.dart';
+import 'package:sipintar/pages/profile/profile_page.dart';
+import 'package:sipintar/pages/review/app_review_page.dart';
+import 'package:sipintar/pages/review/user_feedback_page.dart';
+import 'package:sipintar/pages/admin/reviews/admin_review_management_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
 void main() {
@@ -171,18 +175,18 @@ void main() {
     final auth = AuthStore(audit);
 
     // Login via NIS Siswa
-    final errSiswa = auth.login('2024001234', 'sipintar123');
+    final errSiswa = auth.login('22090044', 'sipintar123');
     expect(errSiswa, isNull);
     expect(auth.currentUser?.role, equals(UserRole.siswa));
-    expect(auth.currentUser?.name, equals('Rizky Pratama'));
+    expect(auth.currentUser?.name, equals('Safrizal Setya Wira Budiman'));
 
     auth.logout();
 
     // Login via NIK Guru
-    final errGuru = auth.login('3374012345670001', 'sipintar123');
+    final errGuru = auth.login('24090106', 'sipintar123');
     expect(errGuru, isNull);
     expect(auth.currentUser?.role, equals(UserRole.guru));
-    expect(auth.currentUser?.name, equals('Siti Nurhaliza, S.Pd.'));
+    expect(auth.currentUser?.name, equals('Ade Anang Kurniawan'));
   });
 
   testWidgets('LoginPage auto-detects NIS (Siswa) and NIK (Guru) as user types', (tester) async {
@@ -203,14 +207,14 @@ void main() {
     final inputFinder = find.byType(TextFormField).first;
 
     // Ketik NIS siswa
-    await tester.enterText(inputFinder, '2024001234');
+    await tester.enterText(inputFinder, '22090044');
     await tester.pump();
-    expect(find.textContaining('Siswa: Rizky Pratama'), findsOneWidget);
+    expect(find.textContaining('Siswa: Safrizal Setya Wira Budiman'), findsOneWidget);
 
     // Ketik NIK guru
-    await tester.enterText(inputFinder, '3374012345670001');
+    await tester.enterText(inputFinder, '24090106');
     await tester.pump();
-    expect(find.textContaining('Guru: Siti Nurhaliza'), findsOneWidget);
+    expect(find.textContaining('Guru: Ade Anang Kurniawan'), findsOneWidget);
   });
 
   testWidgets('LoginPage renders split-screen hero showcase on desktop viewport', (tester) async {
@@ -246,6 +250,61 @@ void main() {
     // Verifikasi Form di sebelah kanan
     expect(find.text('Masuk Aplikasi'), findsNWidgets(2)); // Header form & PrimaryButton label
     expect(find.byType(TextFormField), findsNWidgets(2));
+  });
+
+  testWidgets('LoginPage renders cleanly on Full HD 1920x1080 desktop without overflow', (tester) async {
+    tester.view.physicalSize = const Size(1920, 1080);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+        ],
+        child: const MaterialApp(
+          home: LoginPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('SMK MUHAMMADIYAH 1 SUKOHARJO'), findsOneWidget);
+    expect(find.text('Masuk Aplikasi'), findsNWidgets(2));
+  });
+
+  testWidgets('LoginPage renders cleanly on mobile viewport (width 360) without overflow', (tester) async {
+    tester.view.physicalSize = const Size(360, 780);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+        ],
+        child: const MaterialApp(
+          home: LoginPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Masuk Aplikasi'), findsOneWidget); // PrimaryButton label on mobile
+    expect(find.text('InventarisMuhamka'), findsOneWidget);
+    expect(find.text('Safrizal'), findsOneWidget);
   });
 
   testWidgets('Test back button on ItemCategoryPage when pushed from HomePage', (tester) async {
@@ -438,7 +497,7 @@ void main() {
     final loans = LoanStore(auth, audit, notif, inventory, settings);
     final cart = CartStore();
 
-    auth.login('2024001234', 'sipintar123');
+    auth.login('22090044', 'sipintar123');
 
     await tester.pumpWidget(
       MultiProvider(
@@ -577,5 +636,215 @@ void main() {
     expect(find.text('Buka Keranjang'), findsOneWidget);
     expect(cart.itemCount, equals(1));
     expect(cart.getById('it1')?.qty, equals(1));
+  });
+
+  testWidgets('Sarpras top right profile menu opens ProfilePage', (tester) async {
+    final settings = SettingsStore();
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+    final notif = NotificationStore();
+    final inventory = InventoryStore(auth, audit);
+    final consumables = ConsumableStore(auth, audit, notif);
+    final loans = LoanStore(auth, audit, notif, inventory, settings);
+    final chat = ChatStore(auth, inventory, consumables, loans);
+    final cart = CartStore();
+
+    auth.demoLogin('sp1'); // Petugas Sarpras
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: settings),
+          ChangeNotifierProvider.value(value: audit),
+          ChangeNotifierProvider.value(value: auth),
+          ChangeNotifierProvider.value(value: notif),
+          ChangeNotifierProvider.value(value: inventory),
+          ChangeNotifierProvider.value(value: consumables),
+          ChangeNotifierProvider.value(value: loans),
+          ChangeNotifierProvider.value(value: chat),
+          ChangeNotifierProvider.value(value: cart),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const AdaptiveShell(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Pastikan dashboard sarpras muncul
+    expect(find.text('Ringkasan Operasional Hari Ini'), findsOneWidget);
+
+    // Buka menu akun di pojok kanan atas
+    final accountMenu = find.byTooltip('Akun');
+    expect(accountMenu, findsOneWidget);
+    await tester.tap(accountMenu);
+    await tester.pumpAndSettle();
+
+    // Verifikasi popup menu muncul
+    final profileItem = find.text('Profil');
+    expect(profileItem, findsOneWidget);
+
+    // Tap Profil
+    await tester.tap(profileItem);
+    await tester.pumpAndSettle();
+
+    // Verifikasi ProfilePage berhasil terbuka
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.text('Data Identitas Sekolah'), findsOneWidget);
+    expect(find.text('Sapras'), findsWidgets);
+  });
+
+  testWidgets('AdminReviewSummaryPage displays recap and allows adding evaluation note', (tester) async {
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+    final reviews = ReviewStore();
+
+    auth.demoLogin('ad1'); // Admin: Hendra Gunawan
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+          ChangeNotifierProvider.value(value: reviews),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const AppReviewPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Pastikan header ulasan muncul pada tampilan admin
+    expect(find.text('Ulasan & Penilaian Aplikasi'), findsOneWidget);
+    expect(find.text('Berdasarkan 5 ulasan pengguna'), findsOneWidget);
+
+    // Tekan tombol Tulis Ulasan
+    final writeReviewBtn = find.text('Beri Ulasan');
+    expect(writeReviewBtn, findsOneWidget);
+    await tester.ensureVisible(writeReviewBtn);
+    await tester.pumpAndSettle();
+    await tester.tap(writeReviewBtn);
+    await tester.pumpAndSettle();
+
+    // Modal bottom sheet muncul
+    expect(find.text('Tulis Ulasan / Catatan Evaluasi'), findsOneWidget);
+    expect(find.text('Beri Penilaian Bintang'), findsOneWidget);
+
+    // Isi komentar ulasan
+    final inputComment = find.byType(TextFormField).first;
+    await tester.enterText(inputComment, 'Aplikasi ini sangat bagus dan mempermudah siswa meminjam alat!');
+    await tester.pumpAndSettle();
+
+    // Kirim Ulasan
+    final submitBtn = find.text('Kirim Ulasan');
+    expect(submitBtn, findsOneWidget);
+    await tester.ensureVisible(submitBtn);
+    await tester.pumpAndSettle();
+    await tester.tap(submitBtn);
+    await tester.pumpAndSettle();
+
+    // Verifikasi ulasan bertambah menjadi 6
+    expect(reviews.totalReviews, equals(6));
+    expect(find.text('Berdasarkan 6 ulasan pengguna'), findsOneWidget);
+    expect(find.text('Aplikasi ini sangat bagus dan mempermudah siswa meminjam alat!'), findsOneWidget);
+  });
+
+  testWidgets('UserFeedbackPage allows students to submit suggestions directly and see personal history', (tester) async {
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+    final reviews = ReviewStore();
+
+    auth.demoLogin('sw1'); // Siswa: Rizky Pratama
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+          ChangeNotifierProvider.value(value: reviews),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const UserFeedbackPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Pastikan form kritik & saran siswa muncul langsung di halaman
+    expect(find.text('Kritik & Saran Layanan Sarpras'), findsOneWidget);
+    expect(find.text('Formulir Ulasan & Saran Pengguna'), findsOneWidget);
+    expect(find.text('Bagaimana Kepuasan Anda Terhadap Layanan Sarpras?'), findsOneWidget);
+
+    // Isi kritik dan saran pada textfield langsung
+    final inputSaran = find.byType(TextFormField).first;
+    await tester.enterText(inputSaran, 'Mohon untuk stop kontak charger laptop di lab RPL ditambah.');
+    await tester.pumpAndSettle();
+
+    // Tekan tombol Kirim Saran & Masukan
+    final submitSaranBtn = find.text('Kirim Saran & Masukan');
+    expect(submitSaranBtn, findsOneWidget);
+    await tester.ensureVisible(submitSaranBtn);
+    await tester.pumpAndSettle();
+    await tester.tap(submitSaranBtn);
+    await tester.pumpAndSettle();
+
+    // Verifikasi ulasan bertambah dan tampil di riwayat pribadi siswa
+    expect(reviews.totalReviews, equals(6));
+    expect(reviews.reviewsForUser('sw1').length, equals(2)); // 1 bawaan dummy + 1 baru
+    expect(find.text('Mohon untuk stop kontak charger laptop di lab RPL ditambah.'), findsOneWidget);
+  });
+
+  testWidgets('AdminReviewManagementPage allows moderating and replying to user suggestions', (tester) async {
+    final audit = AuditStore();
+    final auth = AuthStore(audit);
+    final reviews = ReviewStore();
+
+    auth.demoLogin('ad1'); // Admin: Hendra Gunawan
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: auth),
+          ChangeNotifierProvider.value(value: reviews),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const AdminReviewManagementPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Pastikan halaman moderasi ulasan admin terbuka
+    expect(find.text('Pengelolaan & Moderasi Ulasan'), findsOneWidget);
+    expect(find.text('Total Masukan'), findsOneWidget);
+
+    // Cari tombol Beri Tanggapan untuk ulasan pertama
+    final replyBtn = find.text('Beri Tanggapan').first;
+    expect(replyBtn, findsOneWidget);
+    await tester.ensureVisible(replyBtn);
+    await tester.pumpAndSettle();
+    await tester.tap(replyBtn);
+    await tester.pumpAndSettle();
+
+    // Dialog tanggapan resmi muncul
+    expect(find.text('Tanggapan Resmi Admin'), findsOneWidget);
+    final replyInput = find.byType(TextFormField).first;
+    await tester.enterText(replyInput, 'Terima kasih atas masukannya, akan segera kami tindaklanjuti.');
+    await tester.pumpAndSettle();
+
+    // Tekan simpan tanggapan
+    final saveReplyBtn = find.text('Simpan Tanggapan');
+    await tester.tap(saveReplyBtn);
+    await tester.pumpAndSettle();
+
+    // Verifikasi ulasan telah dibalas
+    expect(find.text('Terima kasih atas masukannya, akan segera kami tindaklanjuti.'), findsOneWidget);
   });
 }

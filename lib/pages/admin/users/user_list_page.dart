@@ -84,63 +84,68 @@ class _AdminUserListPageState extends State<AdminUserListPage> with SingleTicker
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Cari nama, NIS, NIK, atau kelas...',
-                        prefixIcon: const Icon(Icons.search),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        suffixIcon: _search.isNotEmpty
-                            ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _search = ''))
-                            : null,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1050),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Cari nama, NIS, NIK, atau kelas...',
+                            prefixIcon: const Icon(Icons.search),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            suffixIcon: _search.isNotEmpty
+                                ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _search = ''))
+                                : null,
+                          ),
+                          onChanged: (v) => setState(() => _search = v.trim().toLowerCase()),
+                        ),
                       ),
-                      onChanged: (v) => setState(() => _search = v.trim().toLowerCase()),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Tab Siswa
-                  _buildUserList(
-                    context,
-                    siswaList,
-                    onEdit: (u) => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => AdminStudentFormPage(student: u as Siswa)),
-                    ),
-                    onReset: (u) => _resetPassword(context, auth, u),
-                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Tab Siswa
+                      _buildUserList(
+                        context,
+                        siswaList,
+                        onEdit: (u) => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => AdminStudentFormPage(student: u as Siswa)),
+                        ),
+                        onReset: (u) => _resetPassword(context, auth, u),
+                      ),
 
-                  // Tab Guru
-                  _buildUserList(
-                    context,
-                    guruList,
-                    onEdit: (u) => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => AdminTeacherFormPage(teacher: u as Guru)),
-                    ),
-                    onReset: (u) => _resetPassword(context, auth, u),
-                  ),
+                      // Tab Guru
+                      _buildUserList(
+                        context,
+                        guruList,
+                        onEdit: (u) => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => AdminTeacherFormPage(teacher: u as Guru)),
+                        ),
+                        onReset: (u) => _resetPassword(context, auth, u),
+                      ),
 
-                  // Tab Staff
-                  _buildUserList(
-                    context,
-                    staffList,
-                    onEdit: null,
-                    onReset: (u) => _resetPassword(context, auth, u),
+                      // Tab Staff
+                      _buildUserList(
+                        context,
+                        staffList,
+                        onEdit: null,
+                        onReset: (u) => _resetPassword(context, auth, u),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

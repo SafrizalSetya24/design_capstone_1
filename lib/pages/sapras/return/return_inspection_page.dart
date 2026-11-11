@@ -76,7 +76,7 @@ class _ReturnInspectionPageState extends State<ReturnInspectionPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Catatan Penting Bagian 27
+                  // Catatan khusus barang habis pakai
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

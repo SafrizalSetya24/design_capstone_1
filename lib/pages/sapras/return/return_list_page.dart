@@ -44,57 +44,62 @@ class SaprasReturnListPage extends StatelessWidget {
                 ),
               ),
             )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: activeLoans.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, idx) {
-                final req = activeLoans[idx];
-                return AppCard(
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  itemCount: activeLoans.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, idx) {
+                    final req = activeLoans[idx];
+                    return AppCard(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(req.id, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary)),
-                          StatusBadge.status( req.status),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Peminjam: ${req.borrower.name} (${req.borrower.identityValue})',
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                      ),
-                      const SizedBox(height: 4),
-                      Text('Barang: ${req.summary}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        children: req.unitCodes.map((c) => Chip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text(c, style: const TextStyle(fontSize: 11)),
-                          avatar: const Icon(Icons.qr_code, size: 14),
-                        )).toList(),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FilledButton.icon(
-                            icon: const Icon(Icons.fact_check_outlined, size: 16),
-                            label: const Text('Inspeksi & Terima Pengembalian'),
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => ReturnInspectionPage(request: req)),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(req.id, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary)),
+                              StatusBadge.status( req.status),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Peminjam: ${req.borrower.name} (${req.borrower.identityValue})',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('Barang: ${req.summary}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            children: req.unitCodes.map((c) => Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text(c, style: const TextStyle(fontSize: 11)),
+                              avatar: const Icon(Icons.qr_code, size: 14),
+                            )).toList(),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FilledButton.icon(
+                                icon: const Icon(Icons.fact_check_outlined, size: 16),
+                                label: const Text('Inspeksi & Terima Pengembalian'),
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => ReturnInspectionPage(request: req)),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
     );
   }

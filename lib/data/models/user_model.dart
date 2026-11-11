@@ -91,7 +91,7 @@ class Guru extends AppUser {
       required this.mataPelajaran})
       : super(role: UserRole.guru);
   @override
-  String get identityLabel => 'NIK';
+  String get identityLabel => 'NUPTK / NIK';
   @override
   String get identityValue => nik;
   @override
@@ -104,7 +104,7 @@ class Guru extends AppUser {
   List<ProfileField> get profileFields => [
         ProfileField('Nama lengkap', name, Icons.person_outline),
         ProfileField('Email', email, Icons.mail_outline),
-        ProfileField('NIK', nik, Icons.badge_outlined),
+        ProfileField('NUPTK / NIK', nik, Icons.badge_outlined),
         ProfileField(
             'Jabatan / mapel', mataPelajaran, Icons.menu_book_outlined),
       ];

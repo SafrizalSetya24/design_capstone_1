@@ -61,7 +61,7 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       );
     }).toList();
 
-    // 1. Buat Draft Pengajuan Peminjaman
+    // Buat draft pengajuan peminjaman
     final request = loans.createDraft(
       borrower: borrower,
       lines: lines,
@@ -70,10 +70,10 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       purpose: widget.purpose,
     );
 
-    // 2. Submit Hasil Verifikasi Wajah (96% Match Confidence)
+    // Verifikasi wajah berhasil dicocokkan
     loans.submitFace(request, ok: true, score: 0.96);
 
-    // 3. Kosongkan Keranjang setelah sukses
+    // Kosongkan keranjang belanja
     cart.clear();
 
     setState(() {

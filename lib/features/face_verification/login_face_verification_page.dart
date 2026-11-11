@@ -181,7 +181,7 @@ class _LoginFaceVerificationPageState extends State<LoginFaceVerificationPage> {
       ),
       const SizedBox(height: AppSpacing.md),
 
-      // Opsi simulasi hasil (untuk demo / pengetesan capstone)
+      // Pengujian simulasi verifikasi wajah
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('Mode Simulasi Hasil',

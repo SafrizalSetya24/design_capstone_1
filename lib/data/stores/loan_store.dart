@@ -1,3 +1,5 @@
+// State management siklus hidup peminjaman barang (pengajuan, SLA 2 jam, handover barcode, dan pengembalian)
+
 import 'package:flutter/foundation.dart';
 import 'package:sipintar/data/dummy/dummy_data.dart';
 import 'package:sipintar/data/models/inventory_models.dart';
@@ -10,68 +12,100 @@ import 'package:sipintar/data/stores/notification_store.dart';
 import 'package:sipintar/data/stores/settings_store.dart';
 
 class LoanStore extends ChangeNotifier {
-  LoanStore(this._auth, this._audit, this._notif, this._inv, this._settings);
-  final AuthStore _auth;
-  final AuditStore _audit;
-  final NotificationStore _notif;
-  final InventoryStore _inv;
-  final SettingsStore _settings;
+  LoanStore(
+    this._authStore,
+    this._auditStore,
+    this._notificationStore,
+    this._inventoryStore,
+    this._settingsStore,
+  );
 
+  final AuthStore _authStore;
+  final AuditStore _auditStore;
+  final NotificationStore _notificationStore;
+  final InventoryStore _inventoryStore;
+  final SettingsStore _settingsStore;
+
+  /// Daftar seluruh data peminjaman di sistem (dimuat awal dari data dummy realistis)
   final List<LoanRequest> loans = DummyData.loans();
-  int _n = 0;
+  int _requestCounter = 0;
 
-  void _log(String type, String detail) {
-    final u = _auth.currentUser;
-    _audit.log(u?.name ?? 'Sistem', u?.role.label ?? 'Sistem', type, detail);
+  // Catat riwayat audit dan perubahan status
+  void _recordAuditLog(String actionType, String detailMessage) {
+    final currentUser = _authStore.currentUser;
+    _auditStore.log(
+      currentUser?.name ?? 'Sistem',
+      currentUser?.role.label ?? 'Sistem',
+      actionType,
+      detailMessage,
+    );
   }
 
-  void _event(LoanRequest l, LoanStatus s, [String? note]) {
-    l.status = s;
-    l.events.add(LoanEvent(s, DateTime.now(), note));
+  void _appendLoanEvent(LoanRequest loan, LoanStatus newStatus, [String? note]) {
+    loan.status = newStatus;
+    loan.events.add(LoanEvent(newStatus, DateTime.now(), note));
   }
 
-  LoanRequest? byId(String id) {
-    for (final l in loans) {
-      if (l.id == id) return l;
+  // Filter dan pencarian peminjaman
+  LoanRequest? byId(String loanId) {
+    for (final loan in loans) {
+      if (loan.id == loanId) return loan;
     }
     return null;
   }
 
-  List<LoanRequest> forUser(String id) =>
-      loans.where((l) => l.borrower.id == id).toList()
+  /// Mengambil daftar peminjaman milik pengguna tertentu (diurutkan dari yang terbaru)
+  List<LoanRequest> forUser(String userId) =>
+      loans.where((loan) => loan.borrower.id == userId).toList()
         ..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
-  List<LoanRequest> withStatus(Set<LoanStatus> s) =>
-      loans.where((l) => s.contains(l.status)).toList()
-        ..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
-  int count(Set<LoanStatus> s) =>
-      loans.where((l) => s.contains(l.status)).length;
 
-  DateTime deadlineOf(LoanRequest l) =>
-      l.submittedAt.add(Duration(hours: _settings.approvalHours));
-  Duration remaining(LoanRequest l) => deadlineOf(l).difference(DateTime.now());
+  /// Mengambil peminjaman dengan status-status tertentu
+  List<LoanRequest> withStatus(Set<LoanStatus> targetStatuses) =>
+      loans.where((loan) => targetStatuses.contains(loan.status)).toList()
+        ..sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
+
+  /// Menghitung jumlah peminjaman berdasarkan status tertentu
+  int count(Set<LoanStatus> targetStatuses) =>
+      loans.where((loan) => targetStatuses.contains(loan.status)).length;
+
+  // Batas waktu SLA approval 2 jam
+  DateTime deadlineOf(LoanRequest loan) =>
+      loan.submittedAt.add(Duration(hours: _settingsStore.approvalHours));
+
+  Duration remaining(LoanRequest loan) =>
+      deadlineOf(loan).difference(DateTime.now());
 
   void checkExpiry() {
-    var changed = false;
-    for (final l in loans) {
-      if (l.status == LoanStatus.menungguPersetujuan &&
-          remaining(l).isNegative) {
-        _expire(l);
-        changed = true;
+    var hasExpiredChanges = false;
+    for (final loan in loans) {
+      if (loan.status == LoanStatus.menungguPersetujuan &&
+          remaining(loan).isNegative) {
+        _expireLoan(loan);
+        hasExpiredChanges = true;
       }
     }
-    if (changed) notifyListeners();
+    if (hasExpiredChanges) {
+      notifyListeners();
+    }
   }
 
-  void _expire(LoanRequest l) {
-    _event(l, LoanStatus.kedaluwarsa,
-        'Batas persetujuan ${_settings.approvalHours} jam terlewati');
-    _notif.add(l.borrower.id, NotifType.kedaluwarsa, 'Booking kedaluwarsa',
-        'Pengajuan ${l.id} tidak diproses dalam ${_settings.approvalHours} jam sehingga kedaluwarsa. Silakan ajukan ulang.',
-        refId: l.id);
-    _log('Kedaluwarsa', 'Booking ${l.id} kedaluwarsa');
+  void _expireLoan(LoanRequest loan) {
+    _appendLoanEvent(
+      loan,
+      LoanStatus.kedaluwarsa,
+      'Batas persetujuan ${_settingsStore.approvalHours} jam terlewati',
+    );
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.kedaluwarsa,
+      'Booking kedaluwarsa',
+      'Pengajuan ${loan.id} tidak diproses dalam ${_settingsStore.approvalHours} jam sehingga kedaluwarsa. Silakan ajukan ulang.',
+      refId: loan.id,
+    );
+    _recordAuditLog('Kedaluwarsa', 'Booking ${loan.id} kedaluwarsa');
   }
 
-  // ---------- Pengajuan ----------
+  // Pengajuan peminjaman dan verifikasi wajah
   LoanRequest createDraft({
     required Borrower borrower,
     required List<LoanLine> lines,
@@ -79,8 +113,8 @@ class LoanStore extends ChangeNotifier {
     required DateTime end,
     required String purpose,
   }) {
-    final l = LoanRequest(
-      id: 'PJM-${(27 + _n++).toString().padLeft(4, '0')}',
+    final loan = LoanRequest(
+      id: 'PJM-${(27 + _requestCounter++).toString().padLeft(4, '0')}',
       borrower: borrower,
       lines: lines,
       start: start,
@@ -89,158 +123,202 @@ class LoanStore extends ChangeNotifier {
       status: LoanStatus.menungguVerifikasiWajah,
       submittedAt: DateTime.now(),
     );
-    l.events.add(LoanEvent(LoanStatus.menungguVerifikasiWajah, DateTime.now()));
-    loans.add(l);
+    loan.events.add(LoanEvent(LoanStatus.menungguVerifikasiWajah, DateTime.now()));
+    loans.add(loan);
     notifyListeners();
-    return l;
+    return loan;
   }
 
-  void submitFace(LoanRequest l, {required bool ok, required double score}) {
-    l.faceScore = score;
-    l.faceVerified = ok;
+  /// Memproses hasil verifikasi wajah biometrik (Anti-Joki)
+  void submitFace(LoanRequest loan, {required bool ok, required double score}) {
+    loan.faceScore = score;
+    loan.faceVerified = ok;
     if (ok) {
-      _event(l, LoanStatus.verifikasiBerhasil,
-          'Wajah cocok (${(score * 100).round()}%)');
-      l.submittedAt = DateTime.now();
-      _event(l, LoanStatus.menungguPersetujuan);
-      _notif.add(
-          l.borrower.id,
-          NotifType.pengajuan,
-          'Pengajuan berhasil dikirim',
-          'Pengajuan ${l.id} menunggu persetujuan Sapras maksimal ${_settings.approvalHours} jam.',
-          refId: l.id);
-      _log('Pengajuan', 'Mengajukan peminjaman ${l.id}');
+      _appendLoanEvent(
+        loan,
+        LoanStatus.verifikasiBerhasil,
+        'Wajah cocok (${(score * 100).round()}%)',
+      );
+      // Reset waktu submit ke saat verifikasi berhasil untuk memulai timer SLA 2 jam
+      loan.submittedAt = DateTime.now();
+      _appendLoanEvent(loan, LoanStatus.menungguPersetujuan);
+      _notificationStore.add(
+        loan.borrower.id,
+        NotifType.pengajuan,
+        'Pengajuan berhasil dikirim',
+        'Pengajuan ${loan.id} menunggu persetujuan Sapras maksimal ${_settingsStore.approvalHours} jam.',
+        refId: loan.id,
+      );
+      _recordAuditLog('Pengajuan', 'Mengajukan peminjaman ${loan.id}');
     }
     notifyListeners();
   }
 
-  // ---------- Persetujuan ----------
-  String? availabilityIssue(LoanRequest l) {
-    for (final line in l.lines) {
-      final it = _inv.itemById(line.itemId);
-      if (it == null || it.available < line.qty) {
-        return 'Unit ${line.itemName} tersedia ${it?.available ?? 0}, dibutuhkan ${line.qty}.';
+  // Persetujuan pengajuan oleh petugas sapras
+  String? availabilityIssue(LoanRequest loan) {
+    for (final line in loan.lines) {
+      final item = _inventoryStore.itemById(line.itemId);
+      if (item == null || item.available < line.qty) {
+        return 'Unit ${line.itemName} tersedia ${item?.available ?? 0}, dibutuhkan ${line.qty}.';
       }
     }
     return null;
   }
 
-  String? approve(LoanRequest l) {
-    if (remaining(l).isNegative) {
+  String? approve(LoanRequest loan) {
+    if (remaining(loan).isNegative) {
       checkExpiry();
       return 'Batas waktu persetujuan sudah terlewati. Booking kedaluwarsa.';
     }
-    final issue = availabilityIssue(l);
+
+    final issue = availabilityIssue(loan);
     if (issue != null) return issue;
-    _event(l, LoanStatus.disetujui,
-        'Disetujui oleh ${_auth.currentUser?.name ?? 'Sapras'}');
-    _notif.add(l.borrower.id, NotifType.persetujuan, 'Peminjaman disetujui',
-        'Pengajuan ${l.id} disetujui. Ambil barang di Ruang Sapras sesuai jadwal.',
-        refId: l.id);
-    _log('Persetujuan', 'Menyetujui peminjaman ${l.id}');
+
+    _appendLoanEvent(
+      loan,
+      LoanStatus.disetujui,
+      'Disetujui oleh ${_authStore.currentUser?.name ?? 'Sapras'}',
+    );
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.persetujuan,
+      'Peminjaman disetujui',
+      'Pengajuan ${loan.id} disetujui. Ambil barang di Ruang Sapras sesuai jadwal.',
+      refId: loan.id,
+    );
+    _recordAuditLog('Persetujuan', 'Menyetujui peminjaman ${loan.id}');
     notifyListeners();
     return null;
   }
 
-  void reject(LoanRequest l, String reason) {
-    l.rejectReason = reason.trim();
-    _event(l, LoanStatus.ditolak, l.rejectReason);
-    _notif.add(l.borrower.id, NotifType.penolakan, 'Peminjaman ditolak',
-        'Pengajuan ${l.id} ditolak. Alasan: ${l.rejectReason}',
-        refId: l.id);
-    _log('Penolakan', 'Menolak peminjaman ${l.id}');
+  /// Menolak pengajuan peminjaman disertai alasan penolakan yang jelas
+  void reject(LoanRequest loan, String reason) {
+    loan.rejectReason = reason.trim();
+    _appendLoanEvent(loan, LoanStatus.ditolak, loan.rejectReason);
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.penolakan,
+      'Peminjaman ditolak',
+      'Pengajuan ${loan.id} ditolak. Alasan: ${loan.rejectReason}',
+      refId: loan.id,
+    );
+    _recordAuditLog('Penolakan', 'Menolak peminjaman ${loan.id}');
     notifyListeners();
   }
 
-  // ---------- Penyerahan ----------
-  List<String> suggestUnits(LoanRequest l, String itemId, int skip) {
-    final it = _inv.itemById(itemId);
-    if (it == null) return [];
-    return it.units
-        .where((u) => u.borrowable && !l.unitCodes.contains(u.code))
-        .map((u) => u.code)
+  // Penyerahan barang fisik
+  List<String> suggestUnits(LoanRequest loan, String itemId, int skip) {
+    final item = _inventoryStore.itemById(itemId);
+    if (item == null) return [];
+    return item.units
+        .where((unit) => unit.borrowable && !loan.unitCodes.contains(unit.code))
+        .map((unit) => unit.code)
         .toList();
   }
 
-  String? handover(LoanRequest l, String receiver, List<String> codes) {
-    if (codes.length != l.totalQty) {
+  /// Konfirmasi penyerahan barang setelah seluruh barcode unit fisik discan
+  String? handover(LoanRequest loan, String receiverName, List<String> scannedUnitCodes) {
+    if (scannedUnitCodes.length != loan.totalQty) {
       return 'Scan seluruh unit barang terlebih dahulu.';
     }
-    _inv.markBorrowed(codes);
-    l.unitCodes = List.of(codes);
-    l.receiver = receiver.trim();
-    l.handoverAt = DateTime.now();
-    _event(l, LoanStatus.sedangDipinjam, 'Diserahkan kepada ${l.receiver}');
-    _notif.add(l.borrower.id, NotifType.pengingat, 'Barang telah diserahkan',
-        'Kembalikan barang pengajuan ${l.id} sebelum ${l.end.hour.toString().padLeft(2, '0')}.${l.end.minute.toString().padLeft(2, '0')}.',
-        refId: l.id);
-    _log('Penyerahan', 'Menyerahkan barang ${l.id}');
+    _inventoryStore.markBorrowed(scannedUnitCodes);
+    loan.unitCodes = List.of(scannedUnitCodes);
+    loan.receiver = receiverName.trim();
+    loan.handoverAt = DateTime.now();
+    _appendLoanEvent(loan, LoanStatus.sedangDipinjam, 'Diserahkan kepada ${loan.receiver}');
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.pengingat,
+      'Barang telah diserahkan',
+      'Kembalikan barang pengajuan ${loan.id} sebelum ${loan.end.hour.toString().padLeft(2, '0')}.${loan.end.minute.toString().padLeft(2, '0')}.',
+      refId: loan.id,
+    );
+    _recordAuditLog('Penyerahan', 'Menyerahkan barang ${loan.id}');
     notifyListeners();
     return null;
   }
 
-  void markDue(LoanRequest l) {
-    _event(l, LoanStatus.menungguPengembalian, 'Jadwal pengembalian tiba');
-    _notif.add(l.borrower.id, NotifType.pengingat, 'Pengingat pengembalian',
-        'Waktu peminjaman ${l.id} telah berakhir. Segera kembalikan barang.',
-        refId: l.id);
+  /// Menandai jadwal peminjaman telah habis dan masuk tahap pengembalian
+  void markDue(LoanRequest loan) {
+    _appendLoanEvent(loan, LoanStatus.menungguPengembalian, 'Jadwal pengembalian tiba');
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.pengingat,
+      'Pengingat pengembalian',
+      'Waktu peminjaman ${loan.id} telah berakhir. Segera kembalikan barang.',
+      refId: loan.id,
+    );
     notifyListeners();
   }
 
-  // ---------- Pengembalian ----------
+  // Pengembalian barang dan pencatatan kondisi fisik
   void completeReturn(
-      LoanRequest l, Map<String, ItemCondition> conds, String note) {
-    l.returnConditions = Map.of(conds);
-    l.damageNote = note.trim().isEmpty ? null : note.trim();
-    l.returnedAt = DateTime.now();
-    for (final e in conds.entries) {
-      _inv.releaseUnit(e.key);
-      if (e.value != ItemCondition.layak) {
-        _inv.reportDamage(e.key,
-            issue: l.damageNote ?? 'Ditemukan saat pengembalian ${l.id}',
-            severity: e.value,
-            note: 'Pengembalian ${l.id}');
+    LoanRequest loan,
+    Map<String, ItemCondition> conditions,
+    String damageNotes,
+  ) {
+    loan.returnConditions = Map.of(conditions);
+    loan.damageNote = damageNotes.trim().isEmpty ? null : damageNotes.trim();
+    loan.returnedAt = DateTime.now();
+
+    for (final entry in conditions.entries) {
+      _inventoryStore.releaseUnit(entry.key);
+      if (entry.value != ItemCondition.layak) {
+        _inventoryStore.reportDamage(
+          entry.key,
+          issue: loan.damageNote ?? 'Ditemukan saat pengembalian ${loan.id}',
+          severity: entry.value,
+          note: 'Pengembalian ${loan.id}',
+        );
       }
     }
-    _event(l, LoanStatus.selesai, 'Dikembalikan');
-    _notif.add(
-        l.borrower.id,
-        NotifType.persetujuan,
-        'Pengembalian dikonfirmasi',
-        'Barang pengajuan ${l.id} telah diterima kembali. Terima kasih.',
-        refId: l.id);
-    _log('Pengembalian', 'Mengonfirmasi pengembalian ${l.id}');
+
+    _appendLoanEvent(loan, LoanStatus.selesai, 'Dikembalikan');
+    _notificationStore.add(
+      loan.borrower.id,
+      NotifType.persetujuan,
+      'Pengembalian dikonfirmasi',
+      'Barang pengajuan ${loan.id} telah diterima kembali. Terima kasih.',
+      refId: loan.id,
+    );
+    _recordAuditLog('Pengembalian', 'Mengonfirmasi pengembalian ${loan.id}');
     notifyListeners();
   }
 
-  // ---------- Simulasi status (demo) ----------
-  String? simulate(LoanRequest l, String action) {
+  // Simulasi status peminjaman
+  String? simulate(LoanRequest loan, String action) {
     switch (action) {
       case 'approve':
-        return approve(l);
+        return approve(loan);
       case 'reject':
-        reject(l,
-            'Barang dibutuhkan untuk kegiatan sekolah pada jadwal tersebut.');
+        reject(
+          loan,
+          'Barang dibutuhkan untuk kegiatan sekolah pada jadwal tersebut.',
+        );
       case 'expire':
-        l.submittedAt = DateTime.now()
-            .subtract(Duration(hours: _settings.approvalHours, minutes: 1));
-        _expire(l);
+        // Mensimulasikan waktu pengajuan mundur 2 jam 1 menit agar melewati batas SLA
+        loan.submittedAt = DateTime.now()
+            .subtract(Duration(hours: _settingsStore.approvalHours, minutes: 1));
+        _expireLoan(loan);
         notifyListeners();
       case 'handover':
-        final codes = <String>[];
-        for (final line in l.lines) {
-          final c = suggestUnits(l, line.itemId, 0).take(line.qty).toList();
-          if (c.length < line.qty) {
+        final autoCodes = <String>[];
+        for (final line in loan.lines) {
+          final availableCodes = suggestUnits(loan, line.itemId, 0).take(line.qty).toList();
+          if (availableCodes.length < line.qty) {
             return 'Unit ${line.itemName} belum cukup tersedia.';
           }
-          codes.addAll(c);
+          autoCodes.addAll(availableCodes);
         }
-        return handover(l, l.borrower.name, codes);
+        return handover(loan, loan.borrower.name, autoCodes);
       case 'due':
-        markDue(l);
+        markDue(loan);
       case 'return':
         completeReturn(
-            l, {for (final c in l.unitCodes) c: ItemCondition.layak}, '');
+          loan,
+          {for (final code in loan.unitCodes) code: ItemCondition.layak},
+          '',
+        );
     }
     return null;
   }

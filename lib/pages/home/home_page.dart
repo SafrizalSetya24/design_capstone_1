@@ -7,8 +7,10 @@ import 'package:sipintar/pages/cart/cart_page.dart';
 import 'package:sipintar/pages/history/borrowing_history_page.dart';
 import 'package:sipintar/pages/notification/notification_page.dart';
 import 'package:sipintar/pages/profile/profile_page.dart';
+import 'package:sipintar/pages/review/user_feedback_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
+// Halaman beranda utama untuk siswa dan guru peminjam barang sarpras
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -20,6 +22,7 @@ class HomePage extends StatelessWidget {
     final loans = context.watch<LoanStore>();
     final notifs = context.watch<NotificationStore>();
 
+    // Cek status peminjaman aktif pengguna
     final myLoans = user == null ? <LoanRequest>[] : loans.forUser(user.id);
     final activeLoan = myLoans.isNotEmpty &&
             (myLoans.first.status == LoanStatus.menungguPersetujuan ||
@@ -30,47 +33,51 @@ class HomePage extends StatelessWidget {
 
     final unreadNotif = user == null ? 0 : notifs.unread(user.id);
 
+    final isDesktop = MediaQuery.of(context).size.width >= 1024;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('InventarisMuhamka'),
-        actions: [
-          IconButton(
-            tooltip: 'Keranjang',
-            icon: Badge(
-              isLabelVisible: !cart.isEmpty,
-              label: Text('${cart.itemCount}'),
-              child: const Icon(Icons.shopping_cart_outlined),
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              title: const Text('InventarisMuhamka'),
+              actions: [
+                IconButton(
+                  tooltip: 'Keranjang',
+                  icon: Badge(
+                    isLabelVisible: !cart.isEmpty,
+                    label: Text('${cart.itemCount}'),
+                    child: const Icon(Icons.shopping_cart_outlined),
+                  ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CartPage(isSubPage: true)),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Notifikasi',
+                  icon: Badge(
+                    isLabelVisible: unreadNotif > 0,
+                    label: Text('$unreadNotif'),
+                    child: const Icon(Icons.notifications_outlined),
+                  ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const NotificationPage(isSubPage: true)),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Profil',
+                  icon: const Icon(Icons.account_circle_outlined),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ProfilePage(isSubPage: true)),
+                  ),
+                ),
+              ],
             ),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CartPage()),
-            ),
-          ),
-          IconButton(
-            tooltip: 'Notifikasi',
-            icon: Badge(
-              isLabelVisible: unreadNotif > 0,
-              label: Text('$unreadNotif'),
-              child: const Icon(Icons.notifications_outlined),
-            ),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const NotificationPage()),
-            ),
-          ),
-          IconButton(
-            tooltip: 'Profil',
-            icon: const Icon(Icons.account_circle_outlined),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ProfilePage()),
-            ),
-          ),
-        ],
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800),
+              constraints: const BoxConstraints(maxWidth: 1050),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -78,19 +85,8 @@ class HomePage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, Color(0xFF1E3A8A)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.25),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      color: AppColors.navy,
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +233,7 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
 
-                  // Alur SOP Peminjaman 6 Langkah (Slide 7 PPT)
+                  // Tahapan alur peminjaman barang
                   AppCard(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -320,7 +316,7 @@ class HomePage extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // Menu Utama (Sesuai Dokumen Spesifikasi Bagian 5)
+                  // Menu utama layanan
                   Text(
                     'Layanan Peminjaman',
                     style: theme.textTheme.titleSmall
@@ -357,7 +353,7 @@ class HomePage extends StatelessWidget {
                         color: Colors.teal,
                         badgeCount: cart.itemCount,
                         onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const CartPage()),
+                          MaterialPageRoute(builder: (_) => const CartPage(isSubPage: true)),
                         ),
                       ),
                       _buildMenuCard(
@@ -368,7 +364,7 @@ class HomePage extends StatelessWidget {
                         color: Colors.indigo,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (_) => const BorrowingHistoryPage()),
+                              builder: (_) => const BorrowingHistoryPage(isSubPage: true)),
                         ),
                       ),
                       _buildMenuCard(
@@ -379,13 +375,85 @@ class HomePage extends StatelessWidget {
                         color: Colors.blueGrey,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (_) => const ProfilePage()),
+                              builder: (_) => const ProfilePage(isSubPage: true)),
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
+
+                  // Banner Kritik & Saran Layanan
+                  AppCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.rate_review_rounded,
+                            color: Color(0xFFD97706),
+                            size: 26,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Beri Kritik & Saran Layanan',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.5,
+                                  color: AppColors.navy,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Sampaikan masukan & penilaian Anda untuk evaluasi sarana prasarana sekolah.',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: theme.hintColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(Icons.send_rounded, size: 15, color: Colors.white),
+                          label: const Text(
+                            'Beri Saran',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const UserFeedbackPage(isSubPage: true),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // Informasi Penting / Panduan
                   AppCard(

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sipintar/core/core.dart';
 import 'package:sipintar/data/data.dart';
@@ -106,7 +106,7 @@ class _SaprasHandoverPageState extends State<SaprasHandoverPage> {
     final loans = context.read<LoanStore>();
     final cons = context.read<ConsumableStore>();
 
-    // 1. Kumpulkan semua kode barcode per-unit
+    // Ambil barcode unit yang telah dipilih
     final allCodes = <String>[];
     for (final line in widget.request.lines) {
       if (line.isPerUnit) {
@@ -114,7 +114,7 @@ class _SaprasHandoverPageState extends State<SaprasHandoverPage> {
         line.assignedUnits = List.from(codes);
         allCodes.addAll(codes);
       } else {
-        // 2. Potong stok barang habis pakai (STOCK_OUT) sesuai Bagian 24 & 25
+        // Kurangi stok barang habis pakai
         final qtyHanded = _consumableHandoverQty[line.itemId] ?? line.qty;
         line.handedOverQty = qtyHanded;
         final item = cons.itemById(line.itemId);
@@ -124,7 +124,7 @@ class _SaprasHandoverPageState extends State<SaprasHandoverPage> {
       }
     }
 
-    // 3. Ubah status per unit menjadi BORROWED & request menjadi HANDED_OVER
+    // Perbarui status peminjaman menjadi telah diserahkan
     loans.handover(widget.request, _receiverCtrl.text.trim(), allCodes);
 
     ScaffoldMessenger.of(context).showSnackBar(

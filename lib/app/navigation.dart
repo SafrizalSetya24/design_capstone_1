@@ -6,28 +6,52 @@ import 'package:sipintar/pages/cart/cart_page.dart';
 import 'package:sipintar/pages/history/borrowing_history_page.dart';
 import 'package:sipintar/pages/notification/notification_page.dart';
 import 'package:sipintar/pages/profile/profile_page.dart';
+import 'package:sipintar/pages/review/user_feedback_page.dart';
+import 'package:sipintar/pages/review/admin_review_summary_page.dart';
+import 'package:sipintar/pages/admin/reviews/admin_review_management_page.dart';
 
-import 'package:sipintar/pages/sapras/dashboard/dashboard_page.dart' as sp_dash;
-import 'package:sipintar/pages/sapras/borrowing/borrowing_list_page.dart' as sp_borrow;
-import 'package:sipintar/pages/sapras/return/return_list_page.dart' as sp_return;
-import 'package:sipintar/pages/sapras/inventory/inventory_list_page.dart' as sp_inv;
-import 'package:sipintar/pages/sapras/consumables/consumable_list_page.dart' as sp_cons;
-import 'package:sipintar/pages/sapras/repair/repair_list_page.dart' as sp_repair;
-import 'package:sipintar/pages/sapras/notifications/notification_page.dart' as sp_notif;
+// Definisi menu navigasi aplikasi berdasarkan peran pengguna (Siswa, Guru, Sapras, Admin)
 
-import 'package:sipintar/pages/admin/dashboard/dashboard_page.dart' as adm_dash;
-import 'package:sipintar/pages/admin/users/user_list_page.dart' as adm_users;
-import 'package:sipintar/pages/admin/roles/role_page.dart' as adm_roles;
-import 'package:sipintar/pages/admin/categories/category_page.dart' as adm_cat;
-import 'package:sipintar/pages/admin/item_types/item_type_page.dart' as adm_types;
-import 'package:sipintar/pages/admin/locations/location_page.dart' as adm_loc;
-import 'package:sipintar/pages/admin/audit_logs/audit_log_page.dart' as adm_audit;
+// Halaman-halaman Operasional Sarana & Prasarana (Sarpras)
+import 'package:sipintar/pages/sapras/dashboard/dashboard_page.dart'
+    as sapras_dash;
+import 'package:sipintar/pages/sapras/borrowing/borrowing_list_page.dart'
+    as sapras_borrow;
+import 'package:sipintar/pages/sapras/return/return_list_page.dart'
+    as sapras_return;
+import 'package:sipintar/pages/sapras/inventory/inventory_list_page.dart'
+    as sapras_inv;
+import 'package:sipintar/pages/sapras/consumables/consumable_list_page.dart'
+    as sapras_cons;
+import 'package:sipintar/pages/sapras/repair/repair_list_page.dart'
+    as sapras_repair;
+import 'package:sipintar/pages/sapras/notifications/notification_page.dart'
+    as sapras_notif;
 
+// Halaman-halaman Master Data Administrator Sistem
+import 'package:sipintar/pages/admin/dashboard/dashboard_page.dart'
+    as admin_dash;
+import 'package:sipintar/pages/admin/users/user_list_page.dart' as admin_users;
+import 'package:sipintar/pages/admin/roles/role_page.dart' as admin_roles;
+import 'package:sipintar/pages/admin/categories/category_page.dart'
+    as admin_cat;
+import 'package:sipintar/pages/admin/item_types/item_type_page.dart'
+    as admin_types;
+import 'package:sipintar/pages/admin/locations/location_page.dart' as admin_loc;
+import 'package:sipintar/pages/admin/audit_logs/audit_log_page.dart'
+    as admin_audit;
+
+/// Model data untuk satu item navigasi pada Sidebar, NavigationRail, atau BottomNavBar
 class NavItem {
-  final String id, label, short, group;
-  final IconData icon, selectedIcon;
+  final String id;
+  final String label;
+  final String short;
+  final String group;
+  final IconData icon;
+  final IconData selectedIcon;
   final bool bottom;
-  final Widget Function(int arg) builder;
+  final Widget Function(int argument) builder;
+
   const NavItem({
     required this.id,
     required this.label,
@@ -41,9 +65,12 @@ class NavItem {
         selectedIcon = selectedIcon ?? icon;
 }
 
-List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
-  final role = user.role;
-  switch (role) {
+// Menu navigasi berdasarkan peran pengguna
+List<NavItem> navItemsFor(AppUser currentUser, SettingsStore settingsStore) {
+  final userRole = currentUser.role;
+
+  switch (userRole) {
+    // Menu siswa & guru
     case UserRole.siswa:
     case UserRole.guru:
       return [
@@ -100,8 +127,18 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           bottom: false,
           builder: (_) => const ProfilePage(),
         ),
+        NavItem(
+          id: 'ulasan',
+          label: 'Kritik & Saran',
+          group: 'Lainnya',
+          icon: Icons.rate_review_outlined,
+          selectedIcon: Icons.rate_review,
+          bottom: false,
+          builder: (_) => const UserFeedbackPage(),
+        ),
       ];
 
+    // Menu petugas sarpras
     case UserRole.sapras:
       return [
         NavItem(
@@ -110,7 +147,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Operasional',
           icon: Icons.dashboard_outlined,
           selectedIcon: Icons.dashboard,
-          builder: (_) => const sp_dash.SaprasDashboardPage(),
+          builder: (_) => const sapras_dash.SaprasDashboardPage(),
         ),
         NavItem(
           id: 'peminjaman',
@@ -118,7 +155,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Operasional',
           icon: Icons.assignment_outlined,
           selectedIcon: Icons.assignment,
-          builder: (_) => const sp_borrow.SaprasBorrowingListPage(),
+          builder: (_) => const sapras_borrow.SaprasBorrowingListPage(),
         ),
         NavItem(
           id: 'pengembalian',
@@ -126,7 +163,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Operasional',
           icon: Icons.keyboard_return_rounded,
           selectedIcon: Icons.keyboard_return,
-          builder: (_) => const sp_return.SaprasReturnListPage(),
+          builder: (_) => const sapras_return.SaprasReturnListPage(),
         ),
         NavItem(
           id: 'inventaris',
@@ -134,7 +171,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Gudang',
           icon: Icons.inventory_2_outlined,
           selectedIcon: Icons.inventory_2,
-          builder: (_) => const sp_inv.SaprasInventoryListPage(),
+          builder: (_) => const sapras_inv.SaprasInventoryListPage(),
         ),
         NavItem(
           id: 'habis_pakai',
@@ -142,7 +179,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Gudang',
           icon: Icons.draw_outlined,
           selectedIcon: Icons.draw,
-          builder: (_) => const sp_cons.SaprasConsumableListPage(),
+          builder: (_) => const sapras_cons.SaprasConsumableListPage(),
         ),
         NavItem(
           id: 'perbaikan',
@@ -150,7 +187,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Gudang',
           icon: Icons.build_outlined,
           selectedIcon: Icons.build,
-          builder: (_) => const sp_repair.SaprasRepairListPage(),
+          builder: (_) => const sapras_repair.SaprasRepairListPage(),
         ),
         NavItem(
           id: 'notifikasi',
@@ -158,10 +195,27 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Akun',
           icon: Icons.notifications_outlined,
           selectedIcon: Icons.notifications,
-          builder: (_) => const sp_notif.SaprasNotificationPage(),
+          builder: (_) => const sapras_notif.SaprasNotificationPage(),
+        ),
+        NavItem(
+          id: 'profil',
+          label: 'Profil Petugas',
+          group: 'Akun',
+          icon: Icons.person_outline,
+          selectedIcon: Icons.person,
+          builder: (_) => const ProfilePage(),
+        ),
+        NavItem(
+          id: 'ulasan',
+          label: 'Rekap Ulasan & Evaluasi',
+          group: 'Akun',
+          icon: Icons.analytics_outlined,
+          selectedIcon: Icons.analytics,
+          builder: (_) => const AdminReviewSummaryPage(),
         ),
       ];
 
+    // Menu administrator sistem
     case UserRole.admin:
       return [
         NavItem(
@@ -170,7 +224,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Utama',
           icon: Icons.dashboard_outlined,
           selectedIcon: Icons.dashboard,
-          builder: (_) => const adm_dash.AdminDashboardPage(),
+          builder: (_) => const admin_dash.AdminDashboardPage(),
         ),
         NavItem(
           id: 'users',
@@ -178,7 +232,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Master Data',
           icon: Icons.people_outline,
           selectedIcon: Icons.people,
-          builder: (_) => const adm_users.AdminUserListPage(),
+          builder: (_) => const admin_users.AdminUserListPage(),
         ),
         NavItem(
           id: 'roles',
@@ -186,7 +240,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Master Data',
           icon: Icons.shield_outlined,
           selectedIcon: Icons.shield,
-          builder: (_) => const adm_roles.AdminRolePage(),
+          builder: (_) => const admin_roles.AdminRolePage(),
         ),
         NavItem(
           id: 'kategori',
@@ -194,7 +248,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Master Data',
           icon: Icons.category_outlined,
           selectedIcon: Icons.category,
-          builder: (_) => const adm_cat.AdminCategoryPage(),
+          builder: (_) => const admin_cat.AdminCategoryPage(),
         ),
         NavItem(
           id: 'model',
@@ -202,7 +256,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Master Data',
           icon: Icons.devices_other,
           selectedIcon: Icons.devices_other,
-          builder: (_) => const adm_types.AdminItemTypePage(),
+          builder: (_) => const admin_types.AdminItemTypePage(),
         ),
         NavItem(
           id: 'lokasi',
@@ -210,7 +264,7 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Master Data',
           icon: Icons.place_outlined,
           selectedIcon: Icons.place,
-          builder: (_) => const adm_loc.AdminLocationPage(),
+          builder: (_) => const admin_loc.AdminLocationPage(),
         ),
         NavItem(
           id: 'audit',
@@ -218,7 +272,31 @@ List<NavItem> navItemsFor(AppUser user, SettingsStore s) {
           group: 'Sistem',
           icon: Icons.history,
           selectedIcon: Icons.history,
-          builder: (_) => const adm_audit.AdminAuditLogPage(),
+          builder: (_) => const admin_audit.AdminAuditLogPage(),
+        ),
+        NavItem(
+          id: 'kelola_ulasan',
+          label: 'Kelola Ulasan',
+          group: 'Layanan',
+          icon: Icons.rate_review_outlined,
+          selectedIcon: Icons.rate_review,
+          builder: (_) => const AdminReviewManagementPage(),
+        ),
+        NavItem(
+          id: 'ulasan',
+          label: 'Rekap Ulasan & Evaluasi',
+          group: 'Layanan',
+          icon: Icons.analytics_outlined,
+          selectedIcon: Icons.analytics,
+          builder: (_) => const AdminReviewSummaryPage(),
+        ),
+        NavItem(
+          id: 'profil',
+          label: 'Profil Admin',
+          group: 'Akun',
+          icon: Icons.person_outline,
+          selectedIcon: Icons.person,
+          builder: (_) => const ProfilePage(),
         ),
       ];
   }

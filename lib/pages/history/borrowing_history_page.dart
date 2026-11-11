@@ -6,7 +6,8 @@ import 'package:sipintar/pages/history/borrowing_detail_history_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
 class BorrowingHistoryPage extends StatefulWidget {
-  const BorrowingHistoryPage({super.key});
+  final bool isSubPage;
+  const BorrowingHistoryPage({super.key, this.isSubPage = false});
 
   @override
   State<BorrowingHistoryPage> createState() => _BorrowingHistoryPageState();
@@ -43,7 +44,7 @@ class _BorrowingHistoryPageState extends State<BorrowingHistoryPage>
     final allUserLoans =
         user == null ? <LoanRequest>[] : loans.forUser(user.id);
 
-    // 1. Sedang Berlangsung: Menunggu Persetujuan, Disetujui, Sedang Dipinjam, Menunggu Pengembalian
+    // Sedang berlangsung
     final ongoing = allUserLoans
         .where((l) =>
             l.status == LoanStatus.menungguPersetujuan ||
@@ -52,11 +53,11 @@ class _BorrowingHistoryPageState extends State<BorrowingHistoryPage>
             l.status == LoanStatus.menungguPengembalian)
         .toList();
 
-    // 2. Selesai
+    // Selesai
     final completed =
         allUserLoans.where((l) => l.status == LoanStatus.selesai).toList();
 
-    // 3. Ditolak / Expired
+    // Ditolak atau kedaluwarsa
     final rejectedOrExpired = allUserLoans
         .where((l) =>
             l.status == LoanStatus.ditolak ||
@@ -65,17 +66,14 @@ class _BorrowingHistoryPageState extends State<BorrowingHistoryPage>
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: 'Kembali',
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              ShellScope.maybeOf(context)?.go('beranda');
-            }
-          },
-        ),
+        automaticallyImplyLeading: false,
+        leading: widget.isSubPage && Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: 'Kembali',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Riwayat Peminjaman'),
         bottom: TabBar(
           controller: _tabController,
@@ -123,64 +121,69 @@ class _BorrowingHistoryPageState extends State<BorrowingHistoryPage>
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: list.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, idx) {
-        final req = list[idx];
-        return InkWell(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (_) => BorrowingDetailHistoryPage(request: req)),
-          ),
-          borderRadius: BorderRadius.circular(12),
-          child: AppCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 960),
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: list.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, idx) {
+            final req = list[idx];
+            return InkWell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => BorrowingDetailHistoryPage(request: req)),
+              ),
+              borderRadius: BorderRadius.circular(12),
+              child: AppCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      req.id,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          color: AppColors.primary),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          req.id,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: AppColors.primary),
+                        ),
+                        StatusBadge.status(req.status),
+                      ],
                     ),
-                    StatusBadge.status(req.status),
+                    const SizedBox(height: 10),
+                    Text(
+                      req.summary,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Jadwal: ${Format.range(req.start, req.end)}',
+                      style: TextStyle(
+                          fontSize: 12, color: Theme.of(context).hintColor),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Keperluan: ${req.purpose}',
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (req.status == LoanStatus.menungguPersetujuan) ...[
+                      const SizedBox(height: 10),
+                      CountdownBadge(deadline: req.expiresAt),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  req.summary,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Jadwal: ${Format.range(req.start, req.end)}',
-                  style: TextStyle(
-                      fontSize: 12, color: Theme.of(context).hintColor),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Keperluan: ${req.purpose}',
-                  style: const TextStyle(fontSize: 12),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (req.status == LoanStatus.menungguPersetujuan) ...[
-                  const SizedBox(height: 10),
-                  CountdownBadge(deadline: req.expiresAt),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

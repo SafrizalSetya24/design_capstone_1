@@ -5,19 +5,20 @@ import 'package:sipintar/data/data.dart';
 import 'package:sipintar/pages/sapras/borrowing/borrowing_detail_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
+// Halaman antrean persetujuan (approval) peminjaman sarpras dengan batas waktu SLA 2 jam
 class SaprasApprovalPage extends StatelessWidget {
   const SaprasApprovalPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final loans = context.watch<LoanStore>();
-    final pending = loans.withStatus({LoanStatus.menungguPersetujuan});
+    final loanStore = context.watch<LoanStore>();
+    final pendingRequests = loanStore.withStatus({LoanStatus.menungguPersetujuan});
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Konfirmasi Approval (SLA 2 Jam)'),
       ),
-      body: pending.isEmpty
+      body: pendingRequests.isEmpty
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -39,52 +40,88 @@ class SaprasApprovalPage extends StatelessWidget {
                 ),
               ),
             )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: pending.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, idx) {
-                final req = pending[idx];
-                return AppCard(
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  itemCount: pendingRequests.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final request = pendingRequests[index];
+                    return AppCard(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(req.id, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary)),
-                          CountdownBadge(deadline: req.expiresAt),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text('${req.borrower.name} (${req.borrower.identityValue})', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text(req.summary, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      const SizedBox(height: 4),
-                      Text('Jadwal: ${Format.range(req.start, req.end)}', style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor)),
-                      Text('Keperluan: ${req.purpose}', style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 14),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FilledButton(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => SaprasBorrowingDetailPage(request: req)),
-                            ),
-                            child: const Text('Buka & Putuskan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                          // Header Kartu: ID Peminjaman & Countdown Timer SLA 2 Jam
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                request.id,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              CountdownBadge(deadline: request.expiresAt),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Identitas Peminjam & Rangkuman Barang
+                          Text(
+                            '${request.borrower.name} (${request.borrower.identityValue})',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
+                          Text(
+                            request.summary,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                          ),
+                          const SizedBox(height: 4),
+
+                          // Jadwal & Keperluan Peminjaman
+                          Text(
+                            'Jadwal: ${Format.range(request.start, request.end)}',
+                            style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
+                          ),
+                          Text(
+                            'Keperluan: ${request.purpose}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          const SizedBox(height: 14),
+
+                          // Tombol Aksi Membuka Detail Pengajuan
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => SaprasBorrowingDetailPage(request: request),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Buka & Putuskan',
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
     );
   }

@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:sipintar/core/core.dart';
 import 'package:sipintar/data/data.dart';
 import 'package:sipintar/app/routes.dart';
+import 'package:sipintar/pages/review/app_review_page.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final bool isSubPage;
+  const ProfilePage({super.key, this.isSubPage = false});
 
   void _showChangePasswordDialog(BuildContext context) {
     final oldPass = TextEditingController();
@@ -69,17 +71,14 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: 'Kembali',
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              ShellScope.maybeOf(context)?.go('beranda');
-            }
-          },
-        ),
+        automaticallyImplyLeading: false,
+        leading: isSubPage && Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: 'Kembali',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Profil Pengguna'),
       ),
       body: SafeArea(
@@ -205,6 +204,26 @@ class ProfilePage extends StatelessWidget {
                           title: const Text('Ubah Password', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500)),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _showChangePasswordDialog(context),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.rate_review_outlined, color: Color(0xFFD97706)),
+                          title: Text(
+                            (user?.role == UserRole.siswa || user?.role == UserRole.guru)
+                                ? 'Kritik & Saran Layanan'
+                                : 'Rekap Ulasan & Evaluasi',
+                            style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+                          ),
+                          subtitle: Text(
+                            (user?.role == UserRole.siswa || user?.role == UserRole.guru)
+                                ? 'Sampaikan masukan & rating bintang'
+                                : 'Pantau rekapitulasi kepuasan pengguna',
+                            style: const TextStyle(fontSize: 11.5, color: Colors.grey),
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const AppReviewPage()),
+                          ),
                         ),
                         const Divider(height: 1),
                         ListTile(

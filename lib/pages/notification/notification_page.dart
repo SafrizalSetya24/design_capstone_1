@@ -5,7 +5,8 @@ import 'package:sipintar/data/data.dart';
 import 'package:sipintar/shared/widgets/widgets.dart';
 
 class NotificationPage extends StatelessWidget {
-  const NotificationPage({super.key});
+  final bool isSubPage;
+  const NotificationPage({super.key, this.isSubPage = false});
 
   @override
   Widget build(BuildContext context) {
@@ -15,17 +16,14 @@ class NotificationPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: 'Kembali',
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              ShellScope.maybeOf(context)?.go('beranda');
-            }
-          },
-        ),
+        automaticallyImplyLeading: false,
+        leading: isSubPage && Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: 'Kembali',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Notifikasi'),
         actions: [
           if (items.isNotEmpty)
@@ -46,7 +44,10 @@ class NotificationPage extends StatelessWidget {
                 ],
               ),
             )
-          : ListView.separated(
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: items.length,
               separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -131,6 +132,8 @@ class NotificationPage extends StatelessWidget {
                 );
               },
             ),
+          ),
+        ),
     );
   }
 }

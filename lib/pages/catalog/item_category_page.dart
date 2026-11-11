@@ -48,17 +48,13 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: 'Kembali',
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              ShellScope.maybeOf(context)?.go('beranda');
-            }
-          },
-        ),
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: 'Kembali',
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
         title: const Text('Katalog Barang'),
         actions: [
           IconButton(
@@ -74,15 +70,18 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Alur SOP Langkah 1
-          const BorrowingFlowStepper(
-            currentStep: 1,
-            showRuleNotice: true,
-          ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: Column(
+            children: [
+              // Alur SOP Langkah 1
+              const BorrowingFlowStepper(
+                currentStep: 1,
+                showRuleNotice: true,
+              ),
 
-          // Selector Klasifikasi Barang (Slide 6 & 7 PPT)
+          // Pilihan klasifikasi barang (inventaris / habis pakai)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
@@ -253,6 +252,8 @@ class _ItemCategoryPageState extends State<ItemCategoryPage> {
           ),
         ],
       ),
+    ),
+  ),
       floatingActionButton: !cart.isEmpty
           ? FloatingActionButton.extended(
               backgroundColor: AppColors.primary,

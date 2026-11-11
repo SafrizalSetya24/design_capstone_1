@@ -73,46 +73,51 @@ class AdminCategoryPage extends StatelessWidget {
       body: SafeArea(
         child: inv.categories.isEmpty
             ? const Center(child: Text('Belum ada kategori yang terdaftar.'))
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: inv.categories.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (context, idx) {
-                  final cat = inv.categories[idx];
-                  final isPerUnit = cat.type == CategoryType.perUnit;
+            : Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 960),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: inv.categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, idx) {
+                      final cat = inv.categories[idx];
+                      final isPerUnit = cat.type == CategoryType.perUnit;
 
-                  return AppCard(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: (isPerUnit ? AppColors.primary : Colors.teal).withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            isPerUnit ? Icons.devices_other : Icons.draw_outlined,
-                            color: isPerUnit ? AppColors.primary : Colors.teal,
-                            size: 20,
-                          ),
+                      return AppCard(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: (isPerUnit ? AppColors.primary : Colors.teal).withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isPerUnit ? Icons.devices_other : Icons.draw_outlined,
+                                color: isPerUnit ? AppColors.primary : Colors.teal,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(cat.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
+                                  Text(cat.type.label, style: TextStyle(fontSize: 11, color: isPerUnit ? AppColors.primary : Colors.teal)),
+                                  if (cat.description.isNotEmpty)
+                                    Text(cat.description, style: const TextStyle(fontSize: 11.5, color: Colors.grey)),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(cat.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                              Text(cat.type.label, style: TextStyle(fontSize: 11, color: isPerUnit ? AppColors.primary : Colors.teal)),
-                              if (cat.description.isNotEmpty)
-                                Text(cat.description, style: const TextStyle(fontSize: 11.5, color: Colors.grey)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ),
               ),
       ),
       floatingActionButton: FloatingActionButton.extended(
